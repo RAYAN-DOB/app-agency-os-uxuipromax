@@ -1,42 +1,78 @@
-# Agency OS — Glass Experience
+# Agency OS — Atelier Glass / Command Center V2
 
-An independent, highly polished **UX/UI concept** for Agency OS. A living interface with Apple-inspired glass navigation, animated ambience, a connected agent constellation and a quiet editorial design language.
+A **design-first, functional browser prototype** for the existing Agency OS Command Center. It is an independent **public** GitHub repository and is deliberately not connected to production systems.
 
-> **UI-only prototype** — every status, metric, agent, model, event and infrastructure state is simulated. This repository is not connected to Agency OS or any real API.
+> **All missions, approvals, diagnostics, agent availability, model routing and status indicators shown are synthetic demonstration scenarios.** No actual Agency OS state is queried and no real work is performed. UI actions such as "simulate approval" modify only the JavaScript state of the open tab.
 
-## Try it
+## Open
 
-Open [`index.html`](./index.html) in a recent browser. There is no build step, no backend, no secrets and no `npm install`.
-
-For local development, optionally serve the directory with:
+Visit the deployed Vercel site or run a static web server from the root:
 
 ```bash
 python3 -m http.server 8080
+# http://localhost:8080
 ```
 
-Visit `http://localhost:8080`.
+No npm install, backend or secrets required. The interface works offline after its static files have loaded.
 
-## What works
+## Design direction
 
-- 7 navigable sections: overview, agents, missions, AI models, infrastructure, design studio and settings.
-- 3 visual themes (Pearl, Midnight, Aurora) saved locally.
-- Fluid ambient orbs and living constellation, with reduced-motion support.
-- Command palette with `Ctrl+K` / `⌘K`, navigation and actions.
-- Creation of local **demo** missions, persisted in `localStorage`.
-- Agent-status filtering, notifications and click-through agent details in demo mode.
-- Responsive navigation for laptop, tablet and mobile.
-- Keyboard-accessible buttons, dialogs and visible focus states.
+**Quiet operations, optical depth and precise evidence.** A macOS-inspired translucent navigation layer floats above restrained neutral content; moving light and refraction are used only in the presentation area, never to obscure important rows. Typography is editorial rather than another AI-company landing page. Dynamic status is presented without inventing success, and failures lead to a clear explanation and a next step.
 
-## Design principles
+- **A custom SVG visual identity** in `assets/aurion-mark.svg`, plus 21 editable module symbols in `assets/marks/*.svg` (original geometric iconography, not copied brand assets).
+- **15 navigable product areas** inspired by the actual structure of the separate private Agency OS frontend: dashboard, director, missions, approvals, runs, agents, skills, models, brain, suppliers, Jarvis/access, infrastructure, memory, studio and preferences.
+- **Useful demos**: command palette (Ctrl/⌘ + K), route switching, filtering missions & agents, inspectable failure, approval demonstration with simulated outcomes, director chat mock, design themes, responsive sidebar, demo form, disabled production access and reduced-motion preferences.
+- **No invented telemetry**: costs, health status, availability and execution quality are explicitly marked fictitious, unknown or unconnected.
 
-An original interpretation of optical glass and motion, not an Apple-affiliated product. Important control surfaces may be translucent, while information surfaces prioritize legibility. References: [Apple materials guidelines](https://developer.apple.com/design/human-interface-guidelines/materials), [Awwwards](https://www.awwwards.com/), [Siteinspire](https://siteinspire.com/), [Mobbin](https://mobbin.com/), [One Page Love](https://onepagelove.com/mcp), [21st.dev](https://21st.dev/), [React Bits](https://reactbits.dev/) and [Motion](https://motion.dev/).
+## Structure
 
-## MCP for Claude Code
+| Location | Purpose |
+| --- | --- |
+| `index.html` | Accessible app shell and overlays |
+| `app.js` | Navigation, scenarios, page views, keyboard interactions and demos |
+| `styles.css` | Token-driven layout, glass surfaces, responsive behavior and dark mode |
+| `assets/aurion-mark.svg` | Original brand artwork |
+| `assets/marks/*.svg` | Original separate SVG module marks |
+| `scripts/export_marks.py` | Source-controlled, reproducible mark exporter |
+| `docs/DESIGN_DIRECTION.md` | Design rationale, token and icon rules |
+| `docs/AGENCY_OS_HANDOFF.md` | React handoff and safe API wiring checklist |
+| `CLAUDE.md` | Instructions for an implementation agent |
+| `tests/static_checks.py` | Local static checks without dependencies |
 
-The `.mcp.json` file declares the public [One Page Love MCP](https://onepagelove.com/mcp/claude-code). Open this directory in Claude Code and verify the MCP connection before asking it to retrieve references. The separate [21st.dev Claude Code plugin](https://github.com/21st-dev/claude-code-plugin) requires installing its plugin and setting your `API_KEY_21ST` environment variable. Do not commit API keys or `.env` files.
+## Source references / skills
 
-Refer to [`CLAUDE.md`](./CLAUDE.md) for project-specific instructions. **No MCP server was invoked during initial authorship**; verified public documentation informed the reference list.
+These were **studied as methodology or reference**, not executed in this demo, and their content has **not** been vendored:
 
-## Next phase
+- [Apple Human Interface Guidelines — Materials](https://developer.apple.com/design/human-interface-guidelines/materials)
+- [UI/UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
+- [OpenDesign — Frontend UI Engineering](https://open-design.ai/skills/frontend-ui-engineering/)
+- [Logo Design Skill](https://github.com/kaankiziltug/logo-design-skill)
+- [21st.dev](https://21st.dev/), [React Bits](https://reactbits.dev/), [One Page Love MCP](https://onepagelove.com/mcp)
 
-The real Agency OS backend should be connected via a separate secure API gateway with read-only discovery first, scoped permissions, server-side secrets, audit logs and explicit confirmation for state-changing actions. Do not point this prototype at Proxmox, LiteLLM or other production services directly from the browser.
+For Claude Code, after reviewing third-party plugin content:
+
+```text
+/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
+/plugin install ui-ux-pro-max@ui-ux-pro-max-skill
+/plugin marketplace add kaankiziltug/logo-design-skill
+/plugin install logo-design@logo-design-skill
+```
+
+One Page Love is configured in `.mcp.json` as a documentation-backed MCP definition, but **its connection is not tested** in this sandbox. Verify it locally. Installation and access rights depend on the agent host.
+
+## Tests
+
+```bash
+node --check app.js
+python3 tests/static_checks.py
+```
+
+Full browser-based visual and interaction tests must be completed in an environment that permits local or deployed web navigation. The authoring sandbox blocked local browser navigation; no claim of a passing desktop/mobile browser suite is made.
+
+## Security / public repository warning
+
+Never commit private inventory, host addresses, service tokens, SSH keys, mail credentials, agent traces, live message history or other production secrets here. All connected actions must go through the **existing authenticated Agency OS backend**, not direct browser calls to Proxmox / LiteLLM / Jarvis / mail servers. Check permissions server-side, write audit logs, and require explicit confirmation for sensitive operations.
+
+## Next
+
+This repo is **not** a fork of the production frontend. Use it as the front-end art-direction source for an integration branch in the private Agency OS repository, carefully preserving the real React routes, API models, real-time queries, permissions and tests. See the handoff document for the suggested mapping.
