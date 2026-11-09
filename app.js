@@ -1,164 +1,133 @@
-/* Agency OS — UX/UI Pro Max Concept v0.1
-   Offline-first UI demonstration. No production APIs or credentials. */
+/* Agency OS — Atelier Glass V1.5
+   Standalone, offline-friendly concept. No real backend, credentials, API calls or
+   simulated success for actions on infrastructure. All operational data is demo. */
 (() => {
   'use strict';
-  const $ = (selector, scope = document) => scope.querySelector(selector);
-  const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-  const escapeHTML = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-  const nav = [
-    { key:'overview',label:"Vue d'ensemble",icon:'grid' },
-    { key:'agents',label:'Mes agents',icon:'orbit' },
-    { key:'missions',label:'Missions',icon:'layers' },
-    { key:'models',label:'Modèles IA',icon:'sparkles' },
-    { key:'infrastructure',label:'Infrastructure',icon:'activity' },
-    { key:'studio',label:'Design studio',icon:'box' },
-    { key:'settings',label:'Préférences',icon:'settings' }
+  const $ = (sel, parent=document) => parent.querySelector(sel);
+  const escape = (value) => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const paths = {
+    home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+    director:'<circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.7 5-4.9 2.6 2.7-4.9z"/>',
+    missions:'<path d="m12 2 9 5-9 5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/>',
+    agents:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2M17 11a3 3 0 1 0-1-5.8M18 15a5 5 0 0 1 3 5v1"/>',
+    models:'<path d="m12 2 9 5v10l-9 5-9-5V7zM3 7l9 5 9-5m-9 5v10"/>',
+    infrastructure:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v7c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12v7c0 1.7 4 3 9 3s9-1.3 9-3v-7"/>',
+    approvals:'<path d="M12 2 4 5v6c0 5 3 8 8 11 5-3 8-6 8-11V5z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+    skills:'<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM16.5 13v7M13 16.5h7"/>',
+    jarvis:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 12h8m-4-4v8"/>',
+    supplier:'<rect x="4" y="7" width="16" height="14" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2M4 12h16"/>',
+    settings:'<path d="M10 2h4l.6 2.5 2 1.1 2.4-.8 2 3.5-1.8 1.9v2.4l1.8 1.9-2 3.5-2.4-.8-2 1.1L14 21h-4l-.6-2.5-2-1.1-2.4.8-2-3.5 1.8-1.9v-2.4L3 8.5 5 5l2.4.8 2-1.1z"/><circle cx="12" cy="11.5" r="2.5"/>',
+    search:'<circle cx="10.8" cy="10.8" r="7"/><path d="m16 16 5 5"/>',
+    bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>',
+    menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+    close:'<path d="M5 5l14 14M19 5 5 19"/>',
+    arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',
+    check:'<path d="m4 12 5 5L20 6"/>',
+    alert:'<path d="m12 2 10 18H2z"/><path d="M12 9v4m0 3h.01"/>',
+    spark:'<path d="m12 2 2 7 7 3-7 2-2 8-3-8-7-2 7-3z"/>',
+    clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+    chart:'<path d="M3 20V4m0 16h18M6 16l5-5 4 3 6-8"/>',
+    copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+    shield:'<path d="M12 2 4 5v7c0 5 3.5 8 8 10 4.5-2 8-5 8-10V5z"/><path d="m8 12 2.5 2.5L16 9"/>',
+    mail:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="m3 7 9 7 9-7"/>',
+    more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    moon:'<path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/>',
+    sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/>',
+    layers:'<path d="M2 12 12 6l10 6-10 6zM2 17l10 6 10-6M2 7l10-6 10 6"/>',
+    info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>',
+    external:'<path d="M13 5h6v6M10 14l9-9M19 14v5H5V5h5"/>',
+  };
+  const icon = (key) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[key]||paths.more}</svg>`;
+  const primary = [
+    {id:'overview',name:'Command Center',icon:'home',hint:'Vue générale'},
+    {id:'director',name:'Directeur',icon:'director',hint:'Discussion et stratégie'},
+    {id:'missions',name:'Missions',icon:'missions',hint:'Projets et tâches'},
+    {id:'agents',name:'Agents',icon:'agents',hint:'Équipe et accès'},
+    {id:'models',name:'Modèles',icon:'models',hint:'Routage et coûts'},
+    {id:'infrastructure',name:'Infrastructure',icon:'infrastructure',hint:'État des services'},
+    {id:'approvals',name:'Validations',icon:'approvals',hint:'Décisions à prendre',count:2},
+  ];
+  const extra = [
+    {id:'skills',name:'Compétences',icon:'skills',hint:'Bibliothèque des skills'},
+    {id:'jarvis',name:'Accès Jarvis',icon:'jarvis',hint:'Permissions des outils'},
+    {id:'supplier',name:'Supplier OS',icon:'supplier',hint:'Fournisseurs et sourcing'},
+    {id:'settings',name:'Préférences',icon:'settings',hint:'Personnaliser le prototype'},
+  ];
+  const nav = [...primary,...extra];
+  const missions = [
+    {id:101,name:'Recherche de fournisseurs',category:'Sourcing · 6 tâches',pct:82,status:'En cours',tone:'good',thumb:'t1',agent:'Recherche'},
+    {id:102,name:'Boutique e-commerce',category:'Développement · 8 tâches',pct:64,status:'En cours',tone:'good',thumb:'t2',agent:'Développement'},
+    {id:103,name:'Identité visuelle Aurion',category:'Design · 5 tâches',pct:33,status:'À examiner',tone:'warning',thumb:'t3',agent:'Design'},
+    {id:104,name:'Messagerie fournisseur',category:'Infrastructure · 3 tâches',pct:18,status:'Bloqué',tone:'danger',thumb:'t2',agent:'Jarvis'},
   ];
   const agents = [
-    {id:'director',name:'Director',role:'Orchestration & décisions',desc:'Coordonne les intentions, répartit le travail et veille à la cohérence des résultats.',symbol:'✳',tone:'',status:'Prêt'},
-    {id:'research',name:'Research',role:'Recherche & synthèse',desc:'Observe les tendances, recoupe les sources et transforme la recherche en connaissance.',symbol:'◈',tone:'lilac',status:'Actif'},
-    {id:'design',name:'Design',role:'Direction artistique',desc:'Imagine des identités singulières et des expériences digitales attentives aux détails.',symbol:'✦',tone:'pink',status:'Actif'},
-    {id:'dev',name:'Builder',role:'Développement & intégration',desc:'Donne forme aux idées : interfaces, applications et services maintenables.',symbol:'⌘',tone:'',status:'Prêt'},
-    {id:'quality',name:'Quality',role:'Tests & validation',desc:'Vérifie les interactions, l’accessibilité, la performance et la qualité finale.',symbol:'✓',tone:'mint',status:'Prêt'},
-    {id:'automation',name:'Automation',role:'Workflows & processus',desc:'Fluidifie les tâches répétitives et connecte les outils de votre studio.',symbol:'↗',tone:'lilac',status:'Actif'}
+    {name:'Directeur',specialty:'Planification et arbitrage',status:'Disponible',tone:''},
+    {name:'Agent Recherche',specialty:'Sources, analyse, fournisseurs',status:'Disponible',tone:''},
+    {name:'Agent Développement',specialty:'Code, tests et livraison',status:'Disponible',tone:''},
+    {name:'Jarvis',specialty:'Exécution avec accès contrôlés',status:'Accès requis',tone:'warning'},
   ];
-  const defaultMissions = [
-    {id:'m-1',title:'Nouvelle identité visuelle',notes:'Moodboard et premières pistes créatives',stage:'progress',agent:'Design',category:'Branding'},
-    {id:'m-2',title:'Veille des interfaces IA',notes:'Analyse des interfaces et interactions remarquables',stage:'progress',agent:'Research',category:'Research'},
-    {id:'m-3',title:'Composants Liquid Glass',notes:'Navigation, boutons et micro-interactions',stage:'progress',agent:'Builder',category:'UI Design'},
-    {id:'m-4',title:'Optimisation du workflow',notes:'Clarification des étapes et automatisations',stage:'todo',agent:'Director',category:'Ops'},
-    {id:'m-5',title:'Audit de performance',notes:'Vérification mobile et accessibilité',stage:'todo',agent:'Quality',category:'Quality'},
-    {id:'m-6',title:'Système de design v0',notes:'Tokens, atmosphères et composants de base',stage:'done',agent:'Design',category:'Design System'}
-  ];
-  const models = [
-    {name:'Claude',desc:'Raisonnement, écriture et orchestration',symbol:'✳',state:'Exemple'},
-    {name:'DeepSeek',desc:'Analyse structurée et tâches techniques',symbol:'◇',state:'Exemple'},
-    {name:'Qwen local',desc:'Inférence hébergée sur votre infrastructure',symbol:'◉',state:'Exemple'},
-    {name:'Gemini',desc:'Analyse et compréhension multimodale',symbol:'✦',state:'Exemple'}
-  ];
-  const infrastructure = [
-    {name:'Compute cluster',desc:'Ressources de calcul et virtualisation',symbol:'⌘'},
-    {name:'Agent runtime',desc:'Exécution des workers et orchestration',symbol:'✳'},
-    {name:'Data services',desc:'Mémoire, stockage et bases de données',symbol:'◈'},
-    {name:'Observability',desc:'Journalisation, mesures et supervision',symbol:'⌁'}
-  ];
-  const storage = {get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
-  let missions = [...defaultMissions];
-  try { const saved = JSON.parse(storage.get('agency-demo-missions') || '[]'); if (Array.isArray(saved)) missions = [...saved.filter(m => m && typeof m.title === 'string' && typeof m.stage === 'string').slice(0,50),...defaultMissions]; } catch { /* Storage unavailable or invalid */ }
-  let filterActive = false;
-  let commandSelection = 0;
-  let commandTargets = [];
-  let toastTimer;
-  let lastFocusedElement = null;
-
-  function icon(name) { return `<svg class="icon" aria-hidden="true"><use href="#i-${name}"/></svg>`; }
-  function toast(message) { const element = $('#toast'); element.textContent = message; element.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => element.classList.remove('show'), 3800); }
-  function routeTo(route) {if (!nav.some(item => item.key === route)) route='overview'; if (location.hash !== `#${route}`) location.hash=route; showPage(route);}
-  function showPage(route) {
-    if (!nav.some(item => item.key === route)) route='overview';
-    $$('.page').forEach(page => page.classList.toggle('active',page.dataset.page===route));
-    $$('[data-route]').forEach(el => { if (el.classList.contains('nav-link')) {const active=el.dataset.route===route;el.classList.toggle('active',active);if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');} });
-    const match=nav.find(item=>item.key===route);$('#crumb-title').textContent=match.label;document.title=`${match.label} — Agency OS`;window.scrollTo({top:0,behavior:'instant'});
-  }
-  function setTheme(theme) {
-    if (!['pearl','midnight','aurora'].includes(theme)) theme='pearl';
-    document.body.dataset.theme=theme;
-    storage.set('agency-theme',theme);
-    $$('.theme-card').forEach(el=>el.classList.toggle('selected',el.dataset.setTheme===theme));
-    $('#theme-select').value=theme;
-    $('#theme-toggle').innerHTML=icon(theme==='midnight'?'sun':'moon');
-  }
-  function renderAgents() {
-    const subset=agents.filter(agent=>!filterActive||agent.status==='Actif');
-    $('#agent-count').textContent=`${subset.length} agent${subset.length>1?'s':''} affiché${subset.length>1?'s':''} · Données fictives`;
-    $('#filter-agents').innerHTML=`${icon('sliders')} ${filterActive?'Agents actifs':'Tous les agents'}`;
-    $('#agents-grid').innerHTML=subset.map(agent=>`<article class="agent-card"><div class="agent-card-head"><div class="agent-emblem ${agent.tone}">${agent.symbol}</div><span class="status-chip"><i></i>${agent.status}</span></div><h3>${agent.name}</h3><p>${agent.desc}</p><div class="agent-card-footer"><span style="color:var(--text-muted);font-size:9px">${agent.role}</span><button class="agent-open" data-agent-detail="${agent.id}">Détails ${icon('arrow')}</button></div></article>`).join('');
-  }
-  function renderMissions() {
-    const stages=[{key:'todo',label:'À explorer'},{key:'progress',label:'En mouvement'},{key:'done',label:'Accomplies'}];
-    $('#missions-count').textContent=`${missions.length} missions · Démonstration locale`;
-    $('#missions-board').innerHTML=stages.map(stage=>{
-      const items=missions.filter(item=>item.stage===stage.key);
-      return `<div class="mission-column"><div class="mission-column-title">${stage.label}<span>${items.length}</span></div>${items.map(item=>`<article class="mission-ticket"><small>${escapeHTML(item.category || 'Nouvelle idée')}</small><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.notes || 'Une nouvelle intention à explorer.')}</p><div class="mission-ticket-bottom"><span class="ticket-avatar">${escapeHTML((item.agent||'A').slice(0,1))}</span><span>${escapeHTML(item.agent || 'Director')}</span></div></article>`).join('') || `<p class="inline-disclaimer">Un peu de calme pour l'instant.</p>`}</div>`;
-    }).join('');
-    const count=12+missions.filter(item=>item.id?.startsWith('custom-')).length;
-    $('#metric-missions').innerHTML=`${count} <span class="metric-sub">/ ${count+6}</span>`;
-  }
-  function renderModels() {$('#models-grid').innerHTML=models.map(m=>`<div class="model-card"><div class="model-mark">${m.symbol}</div><div><h3>${m.name}</h3><p>${m.desc}</p></div><span class="model-state">${m.state}</span></div>`).join('');}
-  function renderInfrastructure() {$('#infra-grid').innerHTML=infrastructure.map(item=>`<div class="infra-card"><div class="infra-mark">${item.symbol}</div><div><h3>${item.name}</h3><p>${item.desc}</p></div><span class="model-state">Non connecté</span></div>`).join('');}
-  function renderActivity() {
-    const activities=[
-      {icon:'✦',tone:'',name:'Design · Une piste créative explorée',desc:'Bibliothèque de composants et interactions',time:'14:32'},
-      {icon:'✓',tone:'green',name:'Quality · Contrôles terminés',desc:'Vérifications d’une interface de démonstration',time:'14:18'},
-      {icon:'◈',tone:'peach',name:'Research · Références identifiées',desc:'Nouvelles sources design pour inspiration',time:'13:56'},
-      {icon:'⌘',tone:'',name:'Builder · Prototype mis en forme',desc:'Interface responsive et animations',time:'13:24'}
-    ];
-    $('#activity-list').innerHTML=activities.map(item=>`<div class="activity-item"><div class="activity-bullet ${item.tone}">${item.icon}</div><div class="activity-desc"><strong>${item.name}</strong><small>${item.desc}</small></div><span class="activity-time">${item.time}</span></div>`).join('');
-  }
-  function getAgent(id) { return agents.find(agent=>agent.id===id); }
-  function openMissionModal() {
-    lastFocusedElement=document.activeElement;
-    closeCommand(false);$('#modal-backdrop').hidden=false;document.body.style.overflow='hidden';
-    setTimeout(()=>$('#mission-title').focus(),50);
-  }
-  function closeMissionModal(returnFocus=true) {
-    $('#modal-backdrop').hidden=true;document.body.style.overflow='';$('#mission-form').reset();if(returnFocus)lastFocusedElement?.focus?.();
-  }
-  function renderCommands(query='') {
-    const q=query.trim().toLocaleLowerCase('fr');
-    commandTargets=[...nav.map(item=>({...item,type:'Page',action:()=>{closeCommand();routeTo(item.key);}})),{key:'new',label:'Créer une nouvelle mission',icon:'plus',type:'Action',action:()=>{closeCommand(false);openMissionModal();}},{key:'theme',label:'Changer de thème',icon:'moon',type:'Action',action:()=>{closeCommand();setTheme(document.body.dataset.theme==='midnight'?'pearl':'midnight');toast('Atmosphère mise à jour.');}}].filter(item=>(item.label+' '+item.type).toLocaleLowerCase('fr').includes(q));
-    commandSelection=Math.max(0,Math.min(commandSelection,commandTargets.length-1));
-    $('#command-results').innerHTML=commandTargets.map((item,i)=>`<button class="command-result ${commandSelection===i?'selected':''}" data-command-index="${i}">${icon(item.icon)}<span>${escapeHTML(item.label)}</span><small>${item.type}</small></button>`).join('')||'<div class="inline-disclaimer" style="padding:15px">Aucun résultat. Essayez « agents » ou « mission ».</div>';
-  }
-  function openCommand() {lastFocusedElement=document.activeElement;closeMissionModal(false);$('#command-backdrop').hidden=false;$('#command-input').value='';commandSelection=0;renderCommands();document.body.style.overflow='hidden';setTimeout(()=>$('#command-input').focus(),50);}
-  function closeCommand(returnFocus=true) {$('#command-backdrop').hidden=true;document.body.style.overflow='';if(returnFocus)lastFocusedElement?.focus?.();}
-
-  document.addEventListener('click',event=>{
-    const route=event.target.closest('[data-route]');if(route){event.preventDefault();routeTo(route.dataset.route);}
-    if(event.target.closest('[data-action="new-mission"]'))openMissionModal();
-    const set=event.target.closest('[data-set-theme]');if(set)setTheme(set.dataset.setTheme);
-    const agentDetail=event.target.closest('[data-agent-detail]');if(agentDetail){const agent=getAgent(agentDetail.dataset.agentDetail);if(agent)toast(`${agent.name} — ${agent.role}. Simulation : aucune commande envoyée.`);}
-    const node=event.target.closest('.network-node');if(node){const agent=getAgent(node.dataset.agent);toast(agent?`${agent.name} · ${agent.role} · ${agent.status} (démo)`:'Director · Centre de coordination (démo)');}
-    const command=event.target.closest('[data-command-index]');if(command){const item=commandTargets[Number(command.dataset.commandIndex)];item?.action?.();}
+  const state={page:'overview',filter:'all',palette:false,commandIndex:0,quiet:localStorage.getItem('agency-quiet')==='1',atmosphere:localStorage.getItem('agency-atmosphere')==='evening'?'evening':'day',chat:[],open:false};
+  document.body.dataset.atmosphere=state.atmosphere;
+  document.body.classList.toggle('quiet-mode',state.quiet);
+  const appPage=$('#app-page'), appNav=$('#app-navigation'), crumb=$('#crumb-current');
+  function toast(text){const el=$('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),3800)}
+  function label(key){return nav.find(x=>x.id===key)?.name||'Command Center'}
+  function renderNavigation(){appNav.innerHTML=primary.map(item=>`<button type="button" class="nav-button ${state.page===item.id?'active':''}" data-nav="${item.id}" ${state.page===item.id?'aria-current="page"':''}>${icon(item.icon)}<span>${item.name}</span>${item.count?`<span class="nav-badge">${item.count}</span>`:''}</button>`).join('')+'<div class="nav-section-label">PLUS D’OUTILS</div>'+extra.map(item=>`<button type="button" class="nav-button ${state.page===item.id?'active':''}" data-nav="${item.id}" ${state.page===item.id?'aria-current="page"':''}>${icon(item.icon)}<span>${item.name}</span></button>`).join('')}
+  function moveTo(page){if(!nav.some(i=>i.id===page)) page='overview';state.page=page;state.filter='all';renderNavigation();crumb.textContent=label(page);appPage.innerHTML=views[page]();appPage.parentElement.scrollTo({top:0,behavior:'instant'});$('#window-app').classList.remove('nav-open');window.location.hash=`app-${page}`;bindDynamic();}
+  function demoTag(){return '<span class="status-pill">Données illustratives</span>'}
+  function head(eyebrow,title,description){return `<header class="page-head"><div class="page-eyebrow">${eyebrow}</div><h2>${title}</h2><p>${description}</p></header>`}
+  function sectionTitle(title,iconName,button=''){return `<div class="panel-title">${icon(iconName)}<h3>${title}</h3>${button}</div>`}
+  function missionRow(m,compact=false){return `<div class="mission-row" data-mission="${m.id}" role="button" tabindex="0" title="Afficher cette mission"><div class="mission-thumb ${m.thumb}"></div><div class="mission-name">${escape(m.name)}<small>${escape(m.category)}</small></div><div class="progress-bar"><i style="width:${m.pct}%;background:${m.tone==='danger'?'#ebb3a5':m.tone==='warning'?'#e7d59f':'#b5e9c3'}"></i></div><span class="mission-percent">${m.pct}%</span></div>`}
+  function overview(){return `<div class="hero-panel"><div class="panel-eyebrow">COMMAND CENTER / VUE GÉNÉRALE</div><h2>Votre agence, <em>en mouvement.</em></h2><p>Vos priorités, vos missions et vos agents, sans le bruit.</p><div class="director-insight"><span class="insight-asterisk" aria-hidden="true">✳</span><div class="insight-copy"><strong>Un point demande votre attention.</strong><span>La mission de messagerie est bloquée : accès Jarvis à examiner avant toute relance.</span></div><button class="glass-arrow" type="button" data-detail="failure">Comprendre ↗</button></div></div><div class="section-annotation"><span>EN UN COUP D’ŒIL</span><small>Simulation · chiffres non connectés</small></div><div class="kpi-grid"><article class="kpi-card"><div class="metric-name">${icon('missions')} Missions actives</div><strong>04</strong><small>Deux avancent bien</small><div class="tiny-chart"><svg viewBox="0 0 80 30" fill="none"><path d="M0 24Q12 23 21 13T41 14T62 9T80 8" stroke="currentColor" stroke-width="2"/></svg></div></article><article class="kpi-card warm"><div class="metric-name">${icon('approvals')} Validations</div><strong>02</strong><small>Votre décision attendue</small></article><article class="kpi-card blue"><div class="metric-name">${icon('agents')} Agents présentés</div><strong>04</strong><small><span class="dotline" aria-label="Trois disponibles, un accès requis"><i></i><i></i><i></i><i></i></span></small></article></div><div class="overview-lower"><section class="panel">${sectionTitle('Missions en cours','missions',`<button type="button" class="subtle-action" data-nav="missions">Tout voir ↗</button>`)}<div class="mission-list">${missions.slice(0,3).map(m=>missionRow(m,true)).join('')}</div><p class="muted-note">Progression fictive · chaque mission possède un détail.</p></section><section class="panel failure-panel"><div class="failure-kicker">${icon('alert')} EXÉCUTION À DIAGNOSTIQUER</div><h3>Création de boîte mail interrompue</h3><div class="failure-cell"><strong>Pourquoi l'action n'a pas abouti</strong>Le scénario indique une permission Jarvis insuffisante. Aucun compte n'a été créé ni vérifié.</div><div class="failure-next"><p><b>Prochaine étape</b>Vérifier les accès, puis confirmer l'exécution côté serveur.</p><button class="mini-button" type="button" data-detail="failure">Voir le détail ↗</button></div></section></div>`}
+  function director(){const chats=state.chat.length?state.chat:[{who:'director',text:'Bonjour. Je suis un aperçu du Directeur. Vous pouvez explorer l’interface, mais aucune instruction n’est envoyée aux agents.'}];return `${head('PILOTAGE / CONVERSATION','Votre <em>Directeur.</em>','Un point d’entrée unique pour formuler un objectif et comprendre les décisions.')}<section class="panel"><div class="chat-area" id="chat-area"><div class="small-caps">CONVERSATION / MODE DÉMONSTRATION</div>${chats.map(x=>`<div class="chat-message ${x.who==='you'?'owner':''}"><span>${x.who==='you'?'VOUS':'DIRECTEUR · DÉMO'}</span>${escape(x.text)}</div>`).join('')}<form class="chat-composer" id="chat-form"><textarea name="message" id="chat-input" placeholder="Ex. Pourquoi la création de la boîte mail a-t-elle échoué ?" aria-label="Message au Directeur de démonstration" required></textarea><button class="button-primary" type="submit">Envoyer ↗</button></form></div><p class="small-print" style="margin:10px 0 0">Ce simulateur n'appelle ni modèle IA, ni infrastructure.</p></section>`}
+  function missionsView(){const current=missions.filter(m=>state.filter==='all'||(state.filter==='attention'?m.tone!=='good':m.tone==='good'));return `${head('PILOTAGE / OBJECTIFS','Des missions <em>lisibles.</em>','Pour chacune : objectif, responsable, progression et dernier résultat.')}<div class="filter-row"><button class="filter-button ${state.filter==='all'?'selected':''}" data-filter="all">Toutes</button><button class="filter-button ${state.filter==='attention'?'selected':''}" data-filter="attention">À examiner</button><button class="filter-button ${state.filter==='good'?'selected':''}" data-filter="good">En cours</button></div><div class="page-stack">${current.map(m=>`<article class="panel"><div class="info-row"><div><strong>${escape(m.name)}</strong><small>Mission #${m.id} · ${escape(m.category)} · ${escape(m.agent)}</small></div><span class="status-pill ${m.tone==='good'?'':m.tone}">${escape(m.status)}</span></div><div class="info-row" style="border:0"><div style="width:76%"><div class="progress-bar"><i style="width:${m.pct}%"></i></div></div><strong>${m.pct}%</strong><button class="button-secondary" data-mission="${m.id}">Détails ↗</button></div></article>`).join('')}</div>`}
+  function agentsView(){return `${head('ÉQUIPE / EXÉCUTION','Des agents, <em>des responsabilités.</em>','Visualiser les rôles, les capacités et les limites, sans inventer un état de production.')}<div class="page-grid">${agents.map(a=>`<article class="panel"><div class="panel-title">${icon(a.name==='Jarvis'?'jarvis':a.name==='Directeur'?'director':'agents')}<h3>${a.name}</h3><span class="status-pill ${a.tone}">${a.status}</span></div><p>${a.specialty}</p><div class="card-foot"><button class="button-secondary" data-detail="agent-${a.name.toLowerCase().replaceAll(' ','-')}">Voir le rôle ↗</button></div></article>`).join('')}</div><p class="muted-note">Statuts de démonstration. Les présences réelles exigent les API et les événements SSE d'Agency OS.</p>`}
+  function modelsView(){return `${head('INFÉRENCE / ROUTAGE','Un modèle pour <em>chaque intention.</em>','Une lecture claire du routage, des dépenses et des coûts réels à connecter.')}<div class="page-grid"><section class="panel">${sectionTitle('Routage conceptuel','models')}<div class="info-row"><div><strong>Directeur</strong><small>Planification, validation et reprise</small></div><span class="status-pill">À connecter</span></div><div class="info-row"><div><strong>Workers</strong><small>Recherche, développement, qualité</small></div><span class="status-pill">À connecter</span></div><div class="info-row"><div><strong>Modèles locaux</strong><small>Exécution sur votre infrastructure</small></div><span class="status-pill">À connecter</span></div></section><section class="panel">${sectionTitle('Dépenses et usage','chart')}<div class="big-number">— <small style="font-size:14px">€</small></div><p>Les métriques ne sont pas raccordées à LiteLLM. Aucun montant fictif n'est présenté comme réel.</p><div class="chart-bars">${[36,57,44,76,58,87,55,66,39,71].map(x=>`<span style="height:${x}%"></span>`).join('')}</div><p class="small-print">Graphique purement décoratif</p></section></div>`}
+  function infraView(){return `${head('SYSTÈME / OBSERVABILITÉ','L’infrastructure, <em>en clair.</em>','État du cluster, des services et des permissions, à relier aux véritables sondes.')}<div class="page-grid"><section class="panel">${sectionTitle('Services attendus','infrastructure')}<div class="info-row"><div><strong>Proxmox</strong><small>VM, nœuds et charges</small></div><span class="status-pill warning">Non connecté</span></div><div class="info-row"><div><strong>Orchestrateur</strong><small>API, missions et exécutions</small></div><span class="status-pill warning">Non connecté</span></div><div class="info-row"><div><strong>LiteLLM</strong><small>Routage et usage des modèles</small></div><span class="status-pill warning">Non connecté</span></div><div class="info-row"><div><strong>Messagerie</strong><small>État et preuves de création</small></div><span class="status-pill warning">Non connecté</span></div></section><section class="panel">${sectionTitle('Signal de disponibilité','shield')}<div class="big-number">—</div><p>Aucun accès à Gatus ni aux outils de supervision. L'absence d'une mesure ne veut pas dire « En bonne santé ».</p><div class="content-callout"><strong>Ce que Claude Code devra relier</strong><p>Sessions authentifiées, routes API existantes, contrôles de permissions et traces de chaque exécution.</p></div><div class="card-foot"><button class="button-secondary" type="button" data-nav="jarvis">Voir les accès ↗</button></div></section></div>`}
+  function approvalsView(){return `${head('GOUVERNANCE / REVUE','Des décisions, <em>pas des surprises.</em>','Vérifier les preuves et les risques avant de permettre une action.')}<div class="page-stack"><section class="panel">${sectionTitle('Décisions en attente','approvals')}<div class="info-row"><div><strong>Autorisation Jarvis · Messagerie</strong><small>Accès à un service, durée et périmètre à vérifier</small></div><button class="button-secondary" data-detail="approval-jarvis">Examiner ↗</button></div><div class="info-row"><div><strong>Validation de livraison · Identité visuelle</strong><small>Contrôle qualité avant utilisation</small></div><button class="button-secondary" data-detail="approval-design">Examiner ↗</button></div></section><div class="content-callout"><strong>Important</strong><p>Les boutons d'approbation ici ne modifient aucun droit ni aucune tâche. L'application réelle doit demander une confirmation et appliquer la décision côté serveur.</p></div></div>`}
+  function skillsView(){return `${head('ÉQUIPE / COMPÉTENCES','Les bons outils, <em>au bon moment.</em>','Références à intégrer au catalogue et à sélectionner selon la mission.')}<div class="page-grid">${[['UI/UX Pro Max','Systèmes visuels, typographie, patterns d’interface'],['Frontend Design','Qualité visuelle et ergonomie du frontend'],['Logo Skill','Symboles originaux et identité de marque'],['Playwright','Tests de parcours et contrôle visuel']].map(([a,b])=>`<article class="panel"><div class="panel-title">${icon('skills')}<h3>${a}</h3></div><p>${b}</p><span class="status-pill warning">Référence · non exécutée</span></article>`).join('')}</div>`}
+  function jarvisView(){return `${head('SYSTÈME / PERMISSIONS','Jarvis, <em>sous contrôle.</em>','Les agents ne doivent pas multiplier les tentatives sans vérifier leurs autorisations.')}<div class="page-grid"><section class="panel">${sectionTitle('Exemple : serveur mail','jarvis')}<div class="info-row"><div><strong>Rôle requis</strong><small>Gestionnaire de comptes de messagerie</small></div><span class="status-pill warning">À confirmer</span></div><div class="info-row"><div><strong>Accès à la machine</strong><small>Autorisation temporaire et périmètre</small></div><span class="status-pill warning">À confirmer</span></div><div class="info-row"><div><strong>Preuve attendue</strong><small>Lecture de l'utilisateur créé, et contrôle d'identité</small></div><span class="status-pill warning">À confirmer</span></div></section><section class="panel failure-panel">${sectionTitle('Scénario d’échec','alert')}<h4>Compte fournisseur non créé</h4><p>Ce scénario reproduit une erreur d'accès sans appeler de serveur réel.</p><div class="content-callout"><strong>Recommandation</strong><p>Diagnostiquer le droit manquant, vérifier le service et demander une autorisation bornée. N’autoriser un nouvel essai qu’après vérification.</p></div><div class="card-foot"><button class="button-secondary" data-detail="failure">Voir le diagnostic ↗</button></div></section></div>`}
+  function supplierView(){return `${head('BUSINESS / SOURCING','Supplier <em>OS.</em>','Rechercher, qualifier, négocier et centraliser les propositions.')}<div class="page-grid"><section class="panel">${sectionTitle('Parcours fournisseur','supplier')}<div class="info-row"><div><strong>01. Découvrir</strong><small>Sources fiables, catalogue, conditions</small></div><span class="status-pill">Préparation</span></div><div class="info-row"><div><strong>02. Qualifier</strong><small>Prix, logistique, stock en France</small></div><span class="status-pill">Préparation</span></div><div class="info-row"><div><strong>03. Contacter</strong><small>Accord humain avant envoi</small></div><span class="status-pill warning">Validation requise</span></div></section><section class="panel">${sectionTitle('Dossier de négociation','mail')}<div class="content-callout"><strong>Demande de devis</strong><p>Le Directeur prépare le message ; vous vérifiez les faits et le destinataire avant envoi.</p></div><p class="small-print" style="margin-top:15px">Aucun message n'est envoyé depuis cette interface.</p></section></div>`}
+  function settingsView(){return `${head('PERSONNALISATION / ATMOSPHÈRE','Votre espace, <em>votre rythme.</em>','Réglages locaux de cette démonstration uniquement.')}<div class="page-grid"><section class="panel">${sectionTitle('Ambiance','sun')}<div class="info-row"><div><strong>Lumière du jour</strong><small>Bleu du ciel et collines lumineuses</small></div><button class="button-secondary" data-atmosphere="day">Activer</button></div><div class="info-row"><div><strong>Heure bleue</strong><small>Une variante plus feutrée</small></div><button class="button-secondary" data-atmosphere="evening">Activer</button></div></section><section class="panel">${sectionTitle('Confort','settings')}<div class="info-row"><div><strong>Réduction du mouvement</strong><small>Respect de vos préférences de lecture</small></div><button class="button-secondary" id="quiet-toggle">${state.quiet?'Réactiver':'Réduire'}</button></div><div class="info-row"><div><strong>Environnement</strong><small>Aucune donnée de production utilisée</small></div><span class="status-pill">Démo</span></div></section></div>`}
+  const views={overview,director,missions:missionsView,agents:agentsView,models:modelsView,infrastructure:infraView,approvals:approvalsView,skills:skillsView,jarvis:jarvisView,supplier:supplierView,settings:settingsView};
+  const detailTemplates={
+    failure: ['DIAGNOSTIC / DÉMONSTRATION','Création de compte interrompue',`<p>Un scénario inspiré d'un problème de permission : le Directeur a demandé une création de compte, mais Jarvis n'avait pas l'accès requis.</p><div class="detail-block"><strong>01 · Cause à confirmer</strong><small>Le rôle, l'hôte cible et l'autorisation n'ont pas été vérifiés avant l'exécution.</small></div><div class="detail-block"><strong>02 · Comportement recommandé</strong><small>Stopper les relances inutiles, demander l'autorisation minimale et tester la connectivité et les droits de manière non destructive.</small></div><div class="detail-block"><strong>03 · Preuve de réussite</strong><small>Relire le compte sur le serveur, vérifier son statut et enregistrer un événement corrélé à la mission.</small></div>`,false],
+    'approval-jarvis':['VALIDATION / DÉMONSTRATION','Autorisation Jarvis',`<p>Le droit demandé doit inclure l'hôte, la commande autorisée et une date d'expiration.</p><div class="detail-block"><strong>Impact et garde-fous</strong><small>Une approbation doit être appliquée par l'API sécurisée d'Agency OS, jamais par l'interface publique de démonstration.</small></div>`,false],
+    'approval-design':['VALIDATION / DÉMONSTRATION','Revue d’identité visuelle',`<p>Vérifier la cohérence graphique, l'accessibilité, les contrastes, les tailles d'icônes et les licences avant acceptation.</p>`,false],
+    about:['PROTOTYPE / INFORMATION','Étude Agency OS V1.5',`<p>Cette version est une étude autonome, construite à partir de la direction artistique V1 et adaptée à l'architecture d'Agency OS.</p><div class="detail-block"><strong>Ce qui fonctionne</strong><small>Navigation, recherche, filtres, chat simulé, préférences et informations détaillées.</small></div><div class="detail-block"><strong>Ce qui reste à connecter</strong><small>Authentification, Directeur réel, agents, missions, permissions Jarvis, validations, suivi LiteLLM et Proxmox.</small></div>`,false],
+  };
+  function openDetail(id){let x=detailTemplates[id];if(!x&&id.startsWith('agent-')){const a=agents.find(a=>a.name.toLowerCase().replaceAll(' ','-')===id.slice(6));if(a)x=['RÔLE / DÉMONSTRATION',a.name,`<p>${a.specialty}</p><div class="detail-block"><strong>Statut fictif</strong><small>${a.status}. Le statut réel doit être calculé depuis les heartbeats et les exécutions des workers.</small></div>`,false]};if(!x&&id.startsWith('mission-')){const m=missions.find(m=>m.id===Number(id.slice(8)));if(m)x=['MISSION / DÉMONSTRATION',m.name,`<p>${m.category}</p><div class="detail-block"><strong>Progression illustrée : ${m.pct}%</strong><small>Agent principal : ${m.agent} · État : ${m.status}. Les tâches et les preuves devront provenir des API.</small></div>`,false]};if(!x)return;$('#dialog').innerHTML=`<div class="dialog-top"><span>${x[0]}</span><button type="button" class="dialog-close" data-close aria-label="Fermer">${icon('close')}</button></div><h2>${x[1]}</h2>${x[2]}<div class="dialog-actions"><button class="button-secondary" data-close>Fermer</button><button class="button-primary" data-demo-action>Préparer l'intégration ↗</button></div>`;$('#dialog').hidden=false;$('#modal-backdrop').hidden=false;$('#dialog .dialog-close').focus()}
+  function closeModal(){if(!$('#dialog').hidden)$('#dialog').hidden=true;closePalette();$('#modal-backdrop').hidden=true}
+  function paletteItems(){const value=$('#command-input').value.toLowerCase().trim();return nav.filter(x=>!value||x.name.toLowerCase().includes(value)||x.hint.toLowerCase().includes(value))}
+  function renderPalette(){const items=paletteItems();state.commandIndex=Math.min(state.commandIndex,Math.max(0,items.length-1));$('#command-results').innerHTML=items.length?items.map((x,i)=>`<button class="command-result ${i===state.commandIndex?'active':''}" data-nav="${x.id}">${icon(x.icon)}<span><strong>${x.name}</strong><small>${x.hint}</small></span></button>`).join(''):'<p class="empty-state">Aucun résultat.</p>'}
+  function openPalette(){if(!$('#dialog').hidden)$('#dialog').hidden=true;state.palette=true;$('#modal-backdrop').hidden=false;$('#command-palette').hidden=false;$('#command-input').value='';state.commandIndex=0;renderPalette();$('#command-input').focus()}
+  function closePalette(){state.palette=false;$('#command-palette').hidden=true}
+  function bindDynamic(){if(state.page==='director'){const area=$('#chat-area');if(area)area.scrollTop=area.scrollHeight}}
+  // Event delegation keeps UI usable after every navigation/render.
+  document.addEventListener('click',e=>{
+    const navButton=e.target.closest('[data-nav]');if(navButton){moveTo(navButton.dataset.nav);if(state.palette)closeModal();return}
+    const mission=e.target.closest('[data-mission]');if(mission){openDetail('mission-'+mission.dataset.mission);return}
+    const detail=e.target.closest('[data-detail]');if(detail){openDetail(detail.dataset.detail);return}
+    if(e.target.closest('[data-close]')){closeModal();return}
+    if(e.target===$('#modal-backdrop')){closeModal();return}
+    if(e.target.closest('[data-demo-action]')){closeModal();toast('Prototype : aucun changement sur Agency OS. Le guide CLAUDE.md décrit l’intégration.');return}
+    const filter=e.target.closest('[data-filter]');if(filter){state.filter=filter.dataset.filter;appPage.innerHTML=views[state.page]();return}
+    const theme=e.target.closest('button[data-atmosphere]');if(theme){state.atmosphere=theme.dataset.atmosphere;document.body.dataset.atmosphere=state.atmosphere;localStorage.setItem('agency-atmosphere',state.atmosphere);toast(state.atmosphere==='day'?'Ambiance jour activée':'Heure bleue activée');return}
+    if(e.target.closest('#quiet-toggle')){state.quiet=!state.quiet;localStorage.setItem('agency-quiet',state.quiet?'1':'0');document.body.classList.toggle('quiet-mode',state.quiet);appPage.innerHTML=views[state.page]();toast('Préférence enregistrée');return}
+    if(e.target.closest('#command-open')){openPalette();return}
+    if(e.target.closest('#notification-open')){openDetail('failure');return}
+    if(e.target.closest('#profile-open')){openDetail('about');return}
+    if(e.target.closest('#mobile-menu')){$('#window-app').classList.toggle('nav-open');return}
+    if(e.target.closest('#window-app')&&!e.target.closest('.app-sidebar')&&!e.target.closest('#mobile-menu')){$('#window-app').classList.remove('nav-open')}
   });
-  $('#filter-agents').addEventListener('click',()=>{filterActive=!filterActive;renderAgents();});
-  $('#theme-toggle').addEventListener('click',()=>setTheme(document.body.dataset.theme==='midnight'?'pearl':'midnight'));
-  $('#theme-select').addEventListener('change',event=>setTheme(event.target.value));
-  $('#search-btn').addEventListener('click',openCommand);
-  $('#network-details').addEventListener('click',()=>routeTo('agents'));
-  $('#activity-more').addEventListener('click',()=>routeTo('missions'));
-  $('#alerts-btn').addEventListener('click',()=>toast('Aucune notification réelle : interface en mode démonstration.'));
-  $('#motion-switch').addEventListener('click',()=>{
-    const isOn=$('#motion-switch').getAttribute('aria-checked')==='true';
-    $('#motion-switch').setAttribute('aria-checked',String(!isOn));$('#motion-switch').classList.toggle('on',!isOn);
-    document.body.classList.toggle('motion-off',isOn);storage.set('agency-motion',isOn?'off':'on');
-  });
-  $('#modal-close').addEventListener('click',()=>closeMissionModal());
-  $('#modal-cancel').addEventListener('click',()=>closeMissionModal());
-  $('#modal-backdrop').addEventListener('click',event=>{if(event.target.id==='modal-backdrop')closeMissionModal();});
-  $('#command-backdrop').addEventListener('click',event=>{if(event.target.id==='command-backdrop')closeCommand();});
-  $('#command-input').addEventListener('input',event=>{commandSelection=0;renderCommands(event.target.value);});
-  $('#command-input').addEventListener('keydown',event=>{
-    if(event.key==='ArrowDown'){event.preventDefault();commandSelection=Math.min(commandSelection+1,commandTargets.length-1);renderCommands(event.target.value);}
-    if(event.key==='ArrowUp'){event.preventDefault();commandSelection=Math.max(0,commandSelection-1);renderCommands(event.target.value);}
-    if(event.key==='Enter'){event.preventDefault();commandTargets[commandSelection]?.action?.();}
-  });
+  document.addEventListener('submit',event=>{if(event.target.id!=='chat-form')return;event.preventDefault();const input=$('#chat-input'),message=input.value.trim();if(!message)return;state.chat.push({who:'you',text:message});const reply=/mail|bo[iî]te|jarvis|acc[eè]s|permission|erreur|échec|echec/i.test(message)?'Dans cette simulation, je commencerais par vérifier les permissions Jarvis, l’accès au serveur cible et les traces des deux tentatives. Je n’affirmerais pas que le compte existe sans pouvoir le relire côté serveur.':'C’est une conversation fictive. Dans Agency OS réel, le Directeur devrait proposer un plan, sélectionner les compétences pertinentes et montrer les preuves de chaque action.';state.chat.push({who:'director',text:reply});appPage.innerHTML=views.director();const area=$('#app-page');area.scrollIntoView({behavior:'smooth',block:'nearest'});$('#chat-input').focus()});
   document.addEventListener('keydown',event=>{
-    if(event.key==='Escape'){if(!$('#modal-backdrop').hidden)closeMissionModal();if(!$('#command-backdrop').hidden)closeCommand();}
-    if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();if($('#command-backdrop').hidden)openCommand();else closeCommand();}
+    if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();if(state.palette)closeModal();else openPalette();return}
+    if(event.key==='Escape'){closeModal();$('#window-app').classList.remove('nav-open');return}
+    if(state.palette){const items=paletteItems();if(event.key==='ArrowDown'){event.preventDefault();state.commandIndex=(state.commandIndex+1)%Math.max(1,items.length);renderPalette()}if(event.key==='ArrowUp'){event.preventDefault();state.commandIndex=(state.commandIndex-1+Math.max(1,items.length))%Math.max(1,items.length);renderPalette()}if(event.key==='Enter'&&items.length){event.preventDefault();moveTo(items[state.commandIndex].id);closeModal()}}
+    if((event.key==='Enter'||event.key===' ')&&event.target.matches('.mission-row[data-mission]')){event.preventDefault();openDetail('mission-'+event.target.dataset.mission)}
   });
-  $('#mission-form').addEventListener('submit',event=>{
-    event.preventDefault();const title=$('#mission-title').value.trim(),notes=$('#mission-notes').value.trim();
-    if(title.length<3)return;
-    const created={id:`custom-${Date.now()}`,title:title.slice(0,100),notes:notes.slice(0,500),stage:'todo',agent:'Director',category:'Nouvelle mission'};
-    missions.unshift(created);
-    storage.set('agency-demo-missions',JSON.stringify(missions.filter(item=>String(item.id).startsWith('custom-')).slice(0,50)));
-    renderMissions();closeMissionModal(false);routeTo('missions');toast('Mission ajoutée à votre démonstration locale. ✳');
-  });
-  const motionAllowed=storage.get('agency-motion')!=='off';
-  $('#motion-switch').classList.toggle('on',motionAllowed);$('#motion-switch').setAttribute('aria-checked',String(motionAllowed));document.body.classList.toggle('motion-off',!motionAllowed);
-  setTheme(storage.get('agency-theme')||'pearl');
-  renderAgents();renderMissions();renderModels();renderInfrastructure();renderActivity();
-  window.addEventListener('hashchange',()=>showPage(location.hash.replace(/^#/,'')||'overview'));
-  showPage(location.hash.replace(/^#/,'')||'overview');
+  $('#command-input').addEventListener('input',()=>{state.commandIndex=0;renderPalette()});
+  // Do not treat arbitrary URL fragments as data. Only allow known local page IDs.
+  const initial=location.hash.replace('#app-','');moveTo(nav.some(n=>n.id===initial)?initial:'overview');
 })();

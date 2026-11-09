@@ -1,42 +1,31 @@
-# Agency OS — Glass Experience
+# Agency OS — Atelier Glass V1.5
 
-An independent, highly polished **UX/UI concept** for Agency OS. A living interface with Apple-inspired glass navigation, animated ambience, a connected agent constellation and a quiet editorial design language.
+A standalone **interactive UI concept** for the Agency OS Command Center, based on the approved V1 direction and the natural-glass visual references. The public demo intentionally has **no backend connection**, no credentials and no production data.
 
-> **UI-only prototype** — every status, metric, agent, model, event and infrastructure state is simulated. This repository is not connected to Agency OS or any real API.
-
-## Try it
-
-Open [`index.html`](./index.html) in a recent browser. There is no build step, no backend, no secrets and no `npm install`.
-
-For local development, optionally serve the directory with:
+## Run locally
 
 ```bash
-python3 -m http.server 8080
+python3 -m http.server 5173
+# http://localhost:5173
 ```
 
-Visit `http://localhost:8080`.
+No npm dependencies, no build step. Static HTML/CSS/JavaScript, compatible with Vercel static deployments.
 
-## What works
+## Features
 
-- 7 navigable sections: overview, agents, missions, AI models, infrastructure, design studio and settings.
-- 3 visual themes (Pearl, Midnight, Aurora) saved locally.
-- Fluid ambient orbs and living constellation, with reduced-motion support.
-- Command palette with `Ctrl+K` / `⌘K`, navigation and actions.
-- Creation of local **demo** missions, persisted in `localStorage`.
-- Agent-status filtering, notifications and click-through agent details in demo mode.
-- Responsive navigation for laptop, tablet and mobile.
-- Keyboard-accessible buttons, dialogs and visible focus states.
+- Cinematic sky / meadow hero and an accessible smoked-glass Command Center
+- Responsive desktop and mobile navigation
+- Real interactive views: Overview, Director (local scripted demo only), Missions, Agents, Models, Infrastructure, Approvals, Skills, Jarvis, Supplier OS, Settings
+- Search via Ctrl+K / Cmd+K, mission details, approval explanatory sheets, status filter and local ambient preferences
+- Respects `prefers-reduced-motion`; clear demo badges and graceful empty/offline status
+- Original SVG brand mark, local optimized WebP assets derived from the user's concept artwork
 
-## Design principles
+## Safety and handoff
 
-An original interpretation of optical glass and motion, not an Apple-affiliated product. Important control surfaces may be translucent, while information surfaces prioritize legibility. References: [Apple materials guidelines](https://developer.apple.com/design/human-interface-guidelines/materials), [Awwwards](https://www.awwwards.com/), [Siteinspire](https://siteinspire.com/), [Mobbin](https://mobbin.com/), [One Page Love](https://onepagelove.com/mcp), [21st.dev](https://21st.dev/), [React Bits](https://reactbits.dev/) and [Motion](https://motion.dev/).
+No API calls are performed. No credentials, infrastructure identifiers or private repository code are included. Example task statuses and counts are explicitly fictional. Controls such as authorization, rerun, approval and account creation do not execute production actions.
 
-## MCP for Claude Code
+For production, migrate components into `RAYAN-DOB/agency-os/services/aicos/orchestrator/ui`, preserving the existing authentication, routes, access rights, React Query, SSE and authorization gates. See [CLAUDE.md](CLAUDE.md).
 
-The `.mcp.json` file declares the public [One Page Love MCP](https://onepagelove.com/mcp/claude-code). Open this directory in Claude Code and verify the MCP connection before asking it to retrieve references. The separate [21st.dev Claude Code plugin](https://github.com/21st-dev/claude-code-plugin) requires installing its plugin and setting your `API_KEY_21ST` environment variable. Do not commit API keys or `.env` files.
+## Visual references
 
-Refer to [`CLAUDE.md`](./CLAUDE.md) for project-specific instructions. **No MCP server was invoked during initial authorship**; verified public documentation informed the reference list.
-
-## Next phase
-
-The real Agency OS backend should be connected via a separate secure API gateway with read-only discovery first, scoped permissions, server-side secrets, audit logs and explicit confirmation for state-changing actions. Do not point this prototype at Proxmox, LiteLLM or other production services directly from the browser.
+The landing and dashboard visual art direction follows the reference images approved by the user: luminous outdoors, editorial typography, smoked glass and cinematic product UI. The typography can fall back to system fonts when Google Fonts is unavailable.

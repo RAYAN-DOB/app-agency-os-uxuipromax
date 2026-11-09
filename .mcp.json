@@ -1,8 +1,5 @@
 {
   "mcpServers": {
-    "onepagelove": {
-      "type": "http",
-      "url": "https://api.onepagelove.com/mcp"
-    }
+    "onepagelove": { "type": "http", "url": "https://api.onepagelove.com/mcp" }
   }
 }

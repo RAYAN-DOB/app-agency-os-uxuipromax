@@ -1,34 +1,41 @@
-# Agency OS — UX/UI Pro Max
+# Handoff — Agency OS / Atelier Glass V1.5
 
-## Mission
-Create exceptional web interfaces: quiet, luminous, alive. Inspiration: Apple Liquid Glass, selected Awwwards, Siteinspire, Mobbin, One Page Love, 21st.dev, React Bits, Motion and shadcn/ui.
+This is a standalone public visual prototype, NOT the production frontend. The user strongly prefers V1. Do not replace its light, spacious composition with busy dashboards or generic AI neon aesthetics.
 
-## Ground rules
-- **Do not copy proprietary designs** or reuse visual assets without permission. Analyze composition, spacing, typography and interaction patterns, then create original implementations.
-- **Research before generating**: use the configured One Page Love MCP for real-world design references. If unavailable, say so; do not fabricate search results.
-- If the 21st.dev plugin/MCP is installed and authenticated locally, search suitable components before coding. Inspect component licenses, dependency versions, accessibility and bundle size first.
-- Avoid stereotypical AI dashboard tropes, excessive violet gradients, unnecessary animations, inaccessible translucent controls or visual clutter.
-- Give navigation/controls a liquid-glass treatment; prefer legible surfaces for data. Support reduced motion and mobile layouts.
-- Maintain a clear separation between this demo and any Agency OS production API. Do not embed access tokens, server IPs, credentials or other production secrets.
-- Changes must keep demo interactions working: routing, search palette, themes, settings, custom mission creation, filtering and responsive layout.
+## Product mapping
 
-## Current implementation
-This first release is intentionally **dependency-free HTML, CSS and JavaScript**. The site can be deployed as a static site or opened locally. All displayed status, agent activity and metrics are illustrative, not live data. Only personal demo missions and display preferences are stored in browser localStorage.
+The production Agency OS frontend is a React 19 / TypeScript / Vite application in `RAYAN-DOB/agency-os/services/aicos/orchestrator/ui/` with real pages, `src/lib/api.ts`, React Query hooks, authentication, SSE updates, approvals, agents, missions, models, infrastructure, skills and Jarvis access control.
 
-## Roadmap (only after design approval)
-- Optional migration to React + TypeScript + Motion + shadcn/ui, preserving visual identity.
-- Typed read-only adapters for Agency OS status and model catalog, with an auth gateway, never direct privileged browser calls.
-- Real user permissions, streaming events, observability and isolated integration tests.
-- Visual regression tests with Playwright in a controlled runner; Lighthouse accessibility/performance checks.
+- `overview` -> dashboard / overview, pending approvals, active tasks, spend, agents, services
+- `director` -> `pages/chat.tsx`, streaming/thread and task decisions
+- `missions` -> `pages/projects.tsx` and `pages/tasks.tsx`
+- `agents` -> `pages/agents.tsx` and realtime presence
+- `models` -> `pages/models.tsx` / spend queries
+- `infrastructure` -> `pages/infra.tsx` / Gatus / Proxmox
+- `approvals` -> `pages/approvals.tsx` with mandatory human confirmation
+- `skills` -> `pages/skills.tsx` including design and quality skill inspection
+- `jarvis` -> `pages/acces.tsx` (time-bounded, host-scoped authorization)
+- `supplier` -> `pages/supplier-os.tsx`
 
-## Recommended MCP setup
-One Page Love is configured by `.mcp.json` for compatible Claude Code installations. Confirm with `claude mcp list` and `/mcp`.
+## Migration strategy
 
-To enable the **21st.dev** Claude Code plugin, obtain an API key on `https://21st.dev/settings/api-keys`, export it as `API_KEY_21ST` in the local shell (never commit it), then inside Claude Code:
+1. Keep the original Agency OS repository and permissions untouched until work is tested.
+2. Convert the V1.5 CSS tokens and layout to React components in an isolated feature branch; do not paste the simulated `app.js` over the production logic.
+3. Reuse existing API contracts and React Query hooks, including loading, error, offline and no-data states. Never present a fabricated positive status when sources are unavailable.
+4. The portrait and meadow are only decorative and should have no security/data meaning. Consider allowing them to be disabled on reduced-motion or low-bandwidth devices.
+5. Fully audit contrast, mobile keyboard, screen readers and performance; check Chromium/WebKit/Firefox where possible.
+6. Do not attempt mailbox creation or any system write from the public demo. The real app must evaluate Jarvis permissions and require human approval.
+7. Do not ship to real production without the user's explicit approval and full test coverage.
 
-```
-/plugin marketplace add 21st-dev/claude-code-plugin
-/plugin install 21st@21st
-```
+## Design invariants
 
-Restart Claude Code and verify the plugin in `/mcp`. Search can be free, code retrieval is rate-limited by the provider's plan. These integrations are configuration suggestions, **not proof that a remote MCP was used to author this V1**.
+- V1 simplicity, vivid sky, living green landscape, dark translucent window and natural gradients
+- Never use cheesy robot avatars, AI sparkle branding or generic purple gradients
+- High-quality typography, gentle movement, layered depth, subtle tactile buttons
+- State colours are semantic, primary actions are obvious, and real metrics must carry provenance
+- Every failure view should show *what failed, why, evidence and next safe action*
+- No screenshot-as-UI: recreate interaction with HTML, CSS and accessible components
+
+## References and optional tools
+
+For skill research and implementation: UI/UX Pro Max, frontend-design, Logo Design Skill, 21st.dev, React Bits, Playwright. Obtain actual packages only after checking licenses and compatibility. The presence of this note does NOT mean the MCPs or skills are installed or executed.
