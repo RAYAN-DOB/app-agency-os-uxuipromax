@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Icône runs">
-  <defs><linearGradient id="bg" x1=".04" y1="0" x2=".93" y2="1"><stop stop-color="#e9f5ef"/><stop offset="1" stop-color="#acd1bd"/></linearGradient></defs>
-  <rect x="1" y="1" width="62" height="62" rx="19" fill="url(#bg)"/>
-  <rect x="1.5" y="1.5" width="61" height="61" rx="18.5" fill="none" stroke="#fff" stroke-opacity=".85"/>
-  <path d="M9 9h17" stroke="#fff" stroke-opacity=".72" stroke-width="2" stroke-linecap="round"/>
-  <g transform="translate(10 10) scale(1.8333)" fill="none" stroke="#568b76" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h6l2-3 3 6h5M4 17h4l2-4 3 7 3-4h4"/></g>
-</svg>

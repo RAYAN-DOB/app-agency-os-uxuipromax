@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Icône suppliers">
-  <defs><linearGradient id="bg" x1=".04" y1="0" x2=".93" y2="1"><stop stop-color="#fbf1e9"/><stop offset="1" stop-color="#dfc29e"/></linearGradient></defs>
-  <rect x="1" y="1" width="62" height="62" rx="19" fill="url(#bg)"/>
-  <rect x="1.5" y="1.5" width="61" height="61" rx="18.5" fill="none" stroke="#fff" stroke-opacity=".85"/>
-  <path d="M9 9h17" stroke="#fff" stroke-opacity=".72" stroke-width="2" stroke-linecap="round"/>
-  <g transform="translate(10 10) scale(1.8333)" fill="none" stroke="#9b794d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.8 8-4.8M12 12.3V21"/></g>
-</svg>

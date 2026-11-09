@@ -1,43 +1,34 @@
-# Claude Code · Agency OS V2 visual handoff
+# Agency OS — UX/UI Pro Max
 
 ## Mission
+Create exceptional web interfaces: quiet, luminous, alive. Inspiration: Apple Liquid Glass, selected Awwwards, Siteinspire, Mobbin, One Page Love, 21st.dev, React Bits, Motion and shadcn/ui.
 
-Turn the `Atelier Glass` prototype into a real, elegant front-end improvement for **Agency OS** without weakening operational safety. The user specifically wants an unusually good native-feeling application, not an AI-dashboard aesthetic with glowy spheres and star icons.
+## Ground rules
+- **Do not copy proprietary designs** or reuse visual assets without permission. Analyze composition, spacing, typography and interaction patterns, then create original implementations.
+- **Research before generating**: use the configured One Page Love MCP for real-world design references. If unavailable, say so; do not fabricate search results.
+- If the 21st.dev plugin/MCP is installed and authenticated locally, search suitable components before coding. Inspect component licenses, dependency versions, accessibility and bundle size first.
+- Avoid stereotypical AI dashboard tropes, excessive violet gradients, unnecessary animations, inaccessible translucent controls or visual clutter.
+- Give navigation/controls a liquid-glass treatment; prefer legible surfaces for data. Support reduced motion and mobile layouts.
+- Maintain a clear separation between this demo and any Agency OS production API. Do not embed access tokens, server IPs, credentials or other production secrets.
+- Changes must keep demo interactions working: routing, search palette, themes, settings, custom mission creation, filtering and responsive layout.
 
-## First actions
+## Current implementation
+This first release is intentionally **dependency-free HTML, CSS and JavaScript**. The site can be deployed as a static site or opened locally. All displayed status, agent activity and metrics are illustrative, not live data. Only personal demo missions and display preferences are stored in browser localStorage.
 
-1. Inspect THIS repository to understand the new visual system and its interactions. Read `docs/DESIGN_DIRECTION.md` and `docs/AGENCY_OS_HANDOFF.md`.
-2. With permitted access, inspect the live, private Agency OS `services/aicos/orchestrator/ui` React application. Do not assume the deployed backend equals the README snapshot; inspect its current source and API.
-3. Create a feature branch in the private application. Do **not** overwrite the production frontend with the static prototype.
-4. Make screenshots at desktop and mobile widths, and perform a keyboard + reduced-motion audit on every changed view.
+## Roadmap (only after design approval)
+- Optional migration to React + TypeScript + Motion + shadcn/ui, preserving visual identity.
+- Typed read-only adapters for Agency OS status and model catalog, with an auth gateway, never direct privileged browser calls.
+- Real user permissions, streaming events, observability and isolated integration tests.
+- Visual regression tests with Playwright in a controlled runner; Lighthouse accessibility/performance checks.
 
-## Reference workflow / skills
+## Recommended MCP setup
+One Page Love is configured by `.mcp.json` for compatible Claude Code installations. Confirm with `claude mcp list` and `/mcp`.
 
-- Use **UI/UX Pro Max** to search product-specific patterns and derive a design system; never blindly combine unrelated styles.
-- Use **OpenDesign / frontend-ui-engineering** for production-quality component architecture, accessibility, responsive behavior, error/loading/empty states and tests.
-- Use **Logo Design Skill** as a process for checking originality, optical balance, monochrome legibility and small-size rendering of the authored SVG symbols. Never copy a trademark logo from its reference library.
-- One Page Love, 21st.dev and React Bits are optional inspiration sources; review licenses. Do not load arbitrary untrusted code or run unknown installation scripts with production credentials.
-- The third-party skills/MCP were not run by this prototype author. Verify locally.
+To enable the **21st.dev** Claude Code plugin, obtain an API key on `https://21st.dev/settings/api-keys`, export it as `API_KEY_21ST` in the local shell (never commit it), then inside Claude Code:
 
-## Design guardrails
+```
+/plugin marketplace add 21st-dev/claude-code-plugin
+/plugin install 21st@21st
+```
 
-- Navigation and interactive controls may be optical glass; dense data and evidence layers must remain opaque, readable and predictable.
-- Apple-like is a quality standard for hierarchy, motion and finish, not permission to copy Apple's branding.
-- Use our original marks in `assets/marks/`. Do not use `sparkles`, robots, rockets or emojis as a default icon for agents.
-- Reserve red for actual error, amber for attention, green for measured success. **Unknown is not green.**
-- Prioritize: what must I decide? what failed? why? what proof? what is safe to do next?
-- Every action must have an accessible focus state, proper disabled and busy states, failure explanation, and clear confirmation where risky.
-- Reduced-motion, touch target sizes and keyboard navigation are essential.
-
-## Integration safety
-
-- UI only. Never create real mailboxes, authorize Jarvis, move Proxmox resources or send messages from this public demo.
-- Preserve existing backend auth and every server-side policy. Never make this public Vercel UI fetch private networks, credentials or tokens.
-- Real data should be read via existing authenticated application routes and TanStack Query, not reimplemented through direct fetches to infrastructure.
-- For blockers, show cause and permission details; do not claim a task succeeded based solely on a successful HTTP request.
-- Require proof of side effects before showing completion, particularly for mail provisioning and SSH actions.
-- Before publication: `npm run typecheck`, `npm run test`, `npm run lint`, `npm run build`, visual smoke tests and careful deployment approval in the existing private project.
-
-## Definition of done
-
-The finished application should be delightful, **quieter** than the current interface, more explainable when agents fail, fast on phones, and fully compatible with the real Agency OS routes and APIs. Do not remove any real features during the visual redesign.
+Restart Claude Code and verify the plugin in `/mcp`. Search can be free, code retrieval is rate-limited by the provider's plan. These integrations are configuration suggestions, **not proof that a remote MCP was used to author this V1**.
