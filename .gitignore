@@ -4,3 +4,7 @@ node_modules/
 !.env.example
 playwright-report/
 test-results/
+
+# third-party reference captures stay local (not redistributed)
+research/captures/*.jpg
+!research/captures/historique-*.jpg

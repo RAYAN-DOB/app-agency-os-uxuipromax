@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agency OS · Fil du jour</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='11' fill='%2326324a'/%3E%3Crect x='11.6' y='4.4' width='10.8' height='10.8' rx='3.4' transform='rotate(45 17 9.8)' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Direction A « Fil du jour » — layout: verre clair V1 ; barre latérale de verre + colonne de décision + fil chronologique ; rail droit « maintenant » */
+:root {
+  --bg: #e9edf5; --bg-2: #f4f6fb;
+  --glass: rgba(255,255,255,.58); --glass-strong: rgba(255,255,255,.82); --glass-line: rgba(255,255,255,.85);
+  --line: rgba(38,52,80,.10); --line-2: rgba(38,52,80,.16);
+  --ink: #1d2537; --ink-2: #435069; --muted: #59657b;
+  --accent: #4b62b5; --accent-soft: #e4e9fb; --accent-glow: rgba(110,135,230,.30);
+  --navy: #252f45; --on-navy: #ffffff;
+  --ok: #2b7558; --ok-soft: #dff1e8; --warn: #93560f; --warn-soft: #fbedd8; --danger: #ab3c47; --danger-soft: #f9e2e4;
+  --orb-a: #c6d6f8; --orb-b: #f6dfd8; --orb-c: #cfeee8;
+  --shadow: 0 18px 50px -18px rgba(52,66,104,.22), 0 2px 6px rgba(52,66,104,.05);
+  --font: 'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --r-xl: 26px; --r-l: 18px; --r-m: 12px;
+  --ease-out: cubic-bezier(.16,1,.3,1); --spring: cubic-bezier(.34,1.4,.64,1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #10141f; --bg-2: #151b29;
+  --glass: rgba(34,42,62,.55); --glass-strong: rgba(40,49,72,.85); --glass-line: rgba(255,255,255,.08);
+  --line: rgba(220,228,255,.09); --line-2: rgba(220,228,255,.15);
+  --ink: #eef1f8; --ink-2: #c3cad9; --muted: #a9b2c5;
+  --accent: #9db0ff; --accent-soft: rgba(120,142,235,.18); --accent-glow: rgba(120,142,235,.35);
+  --navy: #dfe5f5; --on-navy: #141a28;
+  --ok: #74d1a8; --ok-soft: rgba(80,190,140,.15); --warn: #f0b867; --warn-soft: rgba(240,170,80,.14); --danger: #f19aa2; --danger-soft: rgba(230,110,120,.15);
+  --orb-a: #22305a; --orb-b: #3a2a3a; --orb-c: #173a3a;
+  --shadow: 0 20px 50px -20px rgba(0,0,0,.6);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #10141f; --bg-2: #151b29;
+  --glass: rgba(34,42,62,.55); --glass-strong: rgba(40,49,72,.85); --glass-line: rgba(255,255,255,.08);
+  --line: rgba(220,228,255,.09); --line-2: rgba(220,228,255,.15);
+  --ink: #eef1f8; --ink-2: #c3cad9; --muted: #a9b2c5;
+  --accent: #9db0ff; --accent-soft: rgba(120,142,235,.18); --accent-glow: rgba(120,142,235,.35);
+  --navy: #dfe5f5; --on-navy: #141a28;
+  --ok: #74d1a8; --ok-soft: rgba(80,190,140,.15); --warn: #f0b867; --warn-soft: rgba(240,170,80,.14); --danger: #f19aa2; --danger-soft: rgba(230,110,120,.15);
+  --orb-a: #22305a; --orb-b: #3a2a3a; --orb-c: #173a3a;
+  --shadow: 0 20px 50px -20px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box }
+html { -webkit-text-size-adjust: 100% }
+body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--ink); font: 500 14px/1.5 var(--font); -webkit-font-smoothing: antialiased; overflow-x: hidden }
+button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; padding: 0 }
+a { color: inherit; text-decoration: none }
+::selection { background: var(--accent-soft); color: var(--ink) }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px }
+svg.i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round }
+.num { font-variant-numeric: tabular-nums }
+.skip { position: fixed; z-index: 60; left: 16px; top: -60px; padding: 10px 14px; border-radius: 12px; background: var(--navy); color: var(--on-navy); font-weight: 700 } .skip:focus { top: calc(12px + env(safe-area-inset-top, 0px)) }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+
+/* ambient light: three slow orbs (V1), static under reduced motion */
+.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none }
+.ambient i { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .75; will-change: transform }
+.ambient i:nth-child(1) { width: 62vw; height: 70vh; top: -30%; right: -10%; background: radial-gradient(circle, var(--orb-a), transparent 70%); animation: drift 26s ease-in-out infinite alternate }
+.ambient i:nth-child(2) { width: 60vw; height: 64vh; top: 34%; left: -20%; background: radial-gradient(circle, var(--orb-b), transparent 70%); animation: drift 31s ease-in-out infinite alternate-reverse }
+.ambient i:nth-child(3) { width: 54vw; height: 60vh; bottom: -34%; right: 4%; background: radial-gradient(circle, var(--orb-c), transparent 70%); animation: drift 29s ease-in-out infinite alternate }
+@keyframes drift { to { transform: translate3d(4vw, -3vh, 0) scale(1.06) } }
+
+.glass { background: var(--glass); border: 1px solid var(--glass-line); box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.35); -webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%) }
+@media (prefers-reduced-transparency: reduce) { .glass { background: var(--glass-strong); -webkit-backdrop-filter: none; backdrop-filter: none } }
+
+/* shell */
+.shell { display: grid; grid-template-columns: 252px minmax(0,1fr); gap: 24px; max-width: 1560px; margin: 0 auto; padding-block: 22px 32px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)) }
+.side { position: sticky; top: 22px; height: calc(100dvh - 44px); min-height: 640px; border-radius: var(--r-xl); padding: 24px 14px 16px; display: flex; flex-direction: column; gap: 4px; overflow: auto }
+.brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 22px }
+.brand svg { width: 34px; height: 34px }
+.brand b { font-size: 21px; font-weight: 800; letter-spacing: -.045em; line-height: 1 }
+.brand b span { color: var(--accent) }
+.brand small { display: block; font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 3px }
+.group { font-size: 11.5px; font-weight: 700; color: var(--muted); padding: 16px 12px 6px }
+.nav a { display: flex; align-items: center; gap: 11px; padding: 9px 12px; border-radius: 12px; color: var(--ink-2); font-weight: 600; font-size: 13.5px; transition: background .25s var(--ease-out), color .25s, transform .35s var(--spring) }
+.nav a:hover { background: var(--glass-strong); color: var(--ink); transform: translateX(2px) }
+.nav a[aria-current="page"] { background: var(--glass-strong); color: var(--ink); box-shadow: 0 6px 16px -10px rgba(20,28,44,.35) }
+.nav a .count { margin-left: auto; font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--warn-soft); color: var(--warn) }
+.side .fill { flex: 1 }
+.health { display: flex; gap: 10px; align-items: center; padding: 12px; border-radius: 14px; background: var(--glass-strong); font-size: 12px; color: var(--ink-2) }
+.health b { display: block; color: var(--ink); font-size: 12.5px }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; box-shadow: 0 0 0 4px var(--ok-soft) }
+.dot.warn { background: var(--warn); box-shadow: 0 0 0 4px var(--warn-soft) }
+.dot.danger { background: var(--danger); box-shadow: 0 0 0 4px var(--danger-soft) }
+.dot.live { animation: breathe 2.8s ease-in-out infinite }
+@keyframes breathe { 50% { box-shadow: 0 0 0 7px transparent } }
+
+/* top bar */
+.top { display: flex; align-items: center; gap: 12px; border-radius: var(--r-l); padding: 10px 12px 10px 18px; margin-bottom: 26px }
+.crumb { font-size: 13px; color: var(--muted); font-weight: 600 }
+.crumb b { color: var(--ink) }
+.top .sp { flex: 1 }
+.demo { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; color: var(--warn); background: var(--warn-soft); padding: 5px 10px; border-radius: 999px }
+.search { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border-radius: 12px; background: var(--glass-strong); color: var(--muted); font-size: 13px; min-width: 220px; border: 1px solid var(--line) }
+.search kbd { margin-left: auto; font: 600 11px var(--font); border: 1px solid var(--line-2); border-radius: 6px; padding: 1px 5px; color: var(--ink-2) }
+.icon-btn { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: var(--glass-strong); border: 1px solid var(--line); transition: transform .3s var(--spring) }
+.icon-btn:hover { transform: translateY(-1px) }
+.icon-btn:active { transform: scale(.96) }
+
+/* headline: the summary is a sentence built from the data */
+.hello h1 { margin: 0; font-weight: 800; font-size: clamp(34px, 4.2vw, 56px); line-height: 1; letter-spacing: -.045em; text-wrap: balance }
+.hello h1 em { display: block; font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; color: var(--accent); font-size: 1.08em; margin-top: .06em }
+.hello p { margin: 14px 0 0; color: var(--ink-2); font-size: 15px; max-width: 62ch }
+
+/* seven answers ribbon */
+.answers { margin: 26px 0 28px; border-radius: var(--r-l); display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); overflow: hidden }
+.answers a { padding: 14px 16px 15px; display: grid; gap: 4px; border-left: 1px solid var(--line); transition: background .25s var(--ease-out) }
+.answers a:first-child { border-left: 0 }
+.answers a:hover { background: var(--glass-strong) }
+.answers .q { font-size: 12px; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 6px }
+.answers .q svg { width: 15px; height: 15px }
+.answers .a { font-size: 19px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15 }
+.answers .h { font-size: 12px; color: var(--ink-2) }
+.answers .tone-warn .a { color: var(--warn) } .answers .tone-danger .a { color: var(--danger) } .answers .tone-ok .a { color: var(--ok) }
+
+/* main grid */
+.cols { display: grid; grid-template-columns: minmax(0,1.62fr) minmax(300px,1fr); gap: 22px; align-items: start }
+.stack { display: grid; gap: 22px; min-width: 0 }
+.panel { border-radius: var(--r-xl); padding: 20px 20px 10px }
+.panel > header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px }
+.panel h2 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.02em }
+.panel .src { margin-left: auto; font-size: 11.5px; color: var(--muted); font-weight: 600 }
+.panel .src code { font: 600 11.5px var(--font); color: var(--ink-2) }
+
+/* decisions */
+.decision { border-top: 1px solid var(--line); padding: 14px 0 }
+.decision:first-of-type { border-top: 0 }
+.decision .row { display: flex; gap: 14px; align-items: flex-start }
+.badge { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex: none; background: var(--accent-soft); color: var(--accent) }
+.badge.warn { background: var(--warn-soft); color: var(--warn) } .badge.danger { background: var(--danger-soft); color: var(--danger) } .badge.ok { background: var(--ok-soft); color: var(--ok) }
+.decision h3, .item h3 { margin: 0; font-size: 14.5px; font-weight: 700; letter-spacing: -.01em }
+.meta { font-size: 12.5px; color: var(--ink-2); margin-top: 2px }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px }
+.chip { font-size: 11.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--bg-2); color: var(--ink-2); border: 1px solid var(--line) }
+.chip.ok { background: var(--ok-soft); color: var(--ok); border-color: transparent } .chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent } .chip.danger { background: var(--danger-soft); color: var(--danger); border-color: transparent }
+.decision .grow, .item .grow { flex: 1; min-width: 0 }
+.btn { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px; border-radius: 11px; font-weight: 700; font-size: 13px; border: 1px solid var(--line-2); background: var(--glass-strong); transition: transform .35s var(--spring), background .2s; white-space: nowrap }
+.btn:hover { transform: translateY(-1px) }
+.btn:active { transform: scale(.97) }
+.btn.primary { background: var(--navy); color: var(--on-navy); border-color: transparent; box-shadow: 0 8px 20px -10px rgba(30,40,70,.6) }
+.btn.quiet { background: transparent }
+.btn svg { width: 16px; height: 16px }
+.expand { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s var(--ease-out) }
+.expand > div { overflow: hidden }
+.decision[data-open="true"] .expand { grid-template-rows: 1fr }
+.detail { margin: 12px 0 2px 52px; padding: 14px; border-radius: 14px; background: var(--glass-strong); border: 1px solid var(--line); display: grid; gap: 10px; font-size: 13px; color: var(--ink-2) }
+.detail dl { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; margin: 0 }
+.detail dt { color: var(--muted); font-weight: 600 } .detail dd { margin: 0; color: var(--ink) }
+.detail .actions { display: flex; gap: 8px; flex-wrap: wrap }
+
+/* missions */
+.mission { display: grid; grid-template-columns: minmax(0,1fr) 150px auto; gap: 16px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line) }
+.mission:first-of-type { border-top: 0 }
+.bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden }
+.bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); transform-origin: left; animation: grow 1.1s var(--ease-out) both }
+.bar.warn i { background: var(--warn) } .bar.danger i { background: var(--danger) }
+@keyframes grow { from { transform: scaleX(0) } }
+.prog { display: grid; gap: 5px; font-size: 12px; color: var(--ink-2) }
+
+/* ledger (fil) */
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 2px 0 8px }
+.filters button { font-size: 12.5px; font-weight: 700; padding: 6px 11px; border-radius: 999px; color: var(--ink-2); border: 1px solid var(--line) }
+.filters button[aria-pressed="true"] { background: var(--navy); color: var(--on-navy); border-color: transparent }
+.item { position: relative; display: flex; gap: 14px; padding: 14px 12px; margin: 0 -12px; border-radius: 16px; transition: background .8s var(--ease-out), box-shadow .8s var(--ease-out) }
+.item time { font-size: 12px; color: var(--muted); font-weight: 700; width: 40px; flex: none; padding-top: 10px }
+.item.unseen time { color: var(--ink-2) }
+.item.unseen { background: linear-gradient(90deg, var(--accent-soft), transparent 70%); box-shadow: inset 0 0 0 1px var(--accent-glow) }
+.item.unseen::after { content: ""; position: absolute; left: 4px; top: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent) }
+.cause { margin-top: 8px; font-size: 13px; color: var(--ink-2); display: grid; gap: 3px }
+.cause b { color: var(--ink); font-weight: 700 }
+.unavailable { display: flex; gap: 10px; align-items: center; margin: 4px 0 10px; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--line-2); font-size: 12.5px; color: var(--ink-2) }
+
+/* right rail */
+.agent { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border-top: 1px solid var(--line) }
+.agent:first-of-type { border-top: 0 }
+.avatar { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: var(--bg-2); border: 1px solid var(--line); color: var(--ink-2); position: relative; flex: none }
+.avatar .dot { position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; box-shadow: 0 0 0 3px var(--glass-strong) }
+.agent b { font-size: 13.5px } .agent .meta { font-size: 12px }
+.need { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); align-items: flex-start }
+.need:first-of-type { border-top: 0 }
+.need .grow { flex: 1; min-width: 0 }
+.need b { font-size: 13.5px; display: block }
+.link { font-size: 12.5px; font-weight: 700; color: var(--accent); display: inline-flex; gap: 4px; align-items: center; margin-top: 4px }
+.link svg { width: 14px; height: 14px }
+.cost-head { display: flex; align-items: baseline; gap: 8px }
+.cost-head strong { font-size: 30px; font-weight: 800; letter-spacing: -.04em }
+.cost-head span { color: var(--ink-2); font-size: 13px }
+.meter { position: relative; height: 10px; border-radius: 99px; background: var(--line); margin: 10px 0 6px; overflow: hidden }
+.meter i { position: absolute; inset: 0 auto 0 0; width: 41.2%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), #7f95e6); animation: grow 1.2s var(--ease-out) both; transform-origin: left }
+.cost-rows { display: grid; gap: 6px; margin: 12px 0 8px; font-size: 13px }
+.cost-rows div { display: flex; justify-content: space-between; gap: 10px; color: var(--ink-2) }
+.cost-rows b { color: var(--ink) }
+.bars { display: flex; align-items: flex-end; gap: 4px; height: 54px; margin: 12px 0 4px }
+.bars i { flex: 1; border-radius: 4px 4px 2px 2px; background: var(--accent); opacity: .35; min-height: 3px }
+.bars i:last-child { opacity: 1 }
+.axis { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 8px }
+.foot-note { font-size: 12px; color: var(--muted); margin: 26px 4px 0; max-width: 90ch }
+
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); opacity: 0; padding: 11px 16px; border-radius: 14px; background: var(--navy); color: var(--on-navy); font-weight: 700; font-size: 13px; transition: transform .5s var(--spring), opacity .3s; pointer-events: none; z-index: 40; max-width: calc(100vw - 32px) }
+.toast.show { transform: translate(-50%, 0); opacity: 1 }
+
+/* mobile tab bar */
+.tabs { display: none }
+.mbrand { display: none; align-items: center; gap: 8px } .mbrand svg { width: 28px; height: 28px } .mbrand b { font-size: 18px; font-weight: 800; letter-spacing: -.045em } .mbrand b span { color: var(--accent) }
+@media (max-width: 1180px) { .answers { grid-template-columns: repeat(4, minmax(0,1fr)) } .answers a:nth-child(5) { border-left: 0 } .answers a:nth-child(n+5) { border-top: 1px solid var(--line) } }
+@media (max-width: 980px) {
+  .shell { grid-template-columns: 1fr; padding-block: 12px 110px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+  .side { display: none }
+  .cols { grid-template-columns: 1fr }
+  .search { min-width: 0; width: 38px; padding: 0; justify-content: center } .search span, .search kbd { display: none }
+  .crumb { display: none } .mbrand { display: inline-flex } .top { padding-left: 10px }
+  .cols { display: flex; flex-direction: column } .cols > .stack { display: contents }
+  #decider { order: 1 } #equipe { order: 2 } #missions { order: 3 } #manque { order: 4 } #fil { order: 5 } #cout { order: 6 }
+  .tabs { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; z-index: 30; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); border-radius: 22px; padding: 6px }
+  .tabs a { display: grid; place-items: center; gap: 2px; min-height: 52px; border-radius: 16px; font-size: 11px; font-weight: 700; color: var(--ink-2); position: relative }
+  .tabs a[aria-current="page"] { background: var(--glass-strong); color: var(--ink) }
+  .tabs a .count { position: absolute; top: 4px; right: calc(50% - 22px); font-size: 10.5px; min-width: 18px; height: 18px; display: grid; place-items: center; border-radius: 99px; background: var(--warn); color: var(--bg) }
+}
+@media (max-width: 620px) {
+  .answers { grid-template-columns: repeat(2, minmax(0,1fr)) }
+  .answers a { border-left: 1px solid var(--line); border-top: 1px solid var(--line) }
+  .answers a:nth-child(odd) { border-left: 0 } .answers a:nth-child(-n+2) { border-top: 0 }
+  .answers a:last-child { grid-column: 1 / -1; border-left: 0 }
+  .panel { padding: 16px 16px 6px; border-radius: 22px }
+  .mission { grid-template-columns: minmax(0,1fr) auto } .mission .prog { grid-column: 1 / -1; grid-row: 2 }
+  .detail { margin-left: 0 } .detail dl { grid-template-columns: 1fr } .detail dt { margin-top: 4px }
+  .decision .row > .btn { display: none }
+  .decision .row { cursor: pointer }
+  .item time { width: 34px }
+  .top .demo span { display: none }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important }
+}
+</style>
+</head>
+<body>
+<!-- @icons -->
+<svg class="icon-defs" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute">
+  <!-- Agency OS module marks: original 24x24 geometry, 1.6 stroke, round joins. ".d" = secondary layer (duotone in direction B). -->
+  <symbol id="i-directeur" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path class="d" d="M12 6.4 14.3 12 12 17.6 9.7 12Z"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-missions" viewBox="0 0 24 24"><path d="M6 21V3.8"/><path class="d" d="M6 4.6h11.2l-2.3 3.7 2.3 3.7H6"/><path d="M3.6 21h5"/></symbol>
+  <symbol id="i-agents" viewBox="0 0 24 24"><circle cx="7.6" cy="8" r="3"/><circle class="d" cx="16.4" cy="16" r="3"/><path d="M9.9 10.2l4.2 3.6"/><circle cx="17.4" cy="6.6" r="1.4"/><path d="M9.8 18.8c-1.6 1-4.4.9-5.8-.6"/></symbol>
+  <symbol id="i-models" viewBox="0 0 24 24"><path class="d" d="M12 3.4 20.6 19H3.4Z"/><path d="M12 3.4V19M12 19l-5-6.6M12 19l5-6.6"/></symbol>
+  <symbol id="i-runs" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="3.6"/><path class="d" d="M6.4 12.4h2.8l1.6-3.6 2.6 7 1.8-3.4h2.4"/></symbol>
+  <symbol id="i-approvals" viewBox="0 0 24 24"><path class="d" d="M12 3.2 19 6v5.3c0 4.4-2.9 7.7-7 9.5-4.1-1.8-7-5.1-7-9.5V6Z"/><path d="m8.8 12.1 2.3 2.3 4.2-4.6"/></symbol>
+  <symbol id="i-infra" viewBox="0 0 24 24"><rect x="3.6" y="4" width="16.8" height="6.4" rx="2.2"/><rect class="d" x="3.6" y="13.6" width="16.8" height="6.4" rx="2.2"/><path d="M7.2 7.2h.01M7.2 16.8h.01M11 7.2h5.6M11 16.8h5.6"/></symbol>
+  <symbol id="i-jarvis" viewBox="0 0 24 24"><circle class="d" cx="8.4" cy="15.6" r="4.2"/><path d="m11.4 12.6 8.2-8.2M16.4 7.6l2.2 2.2M14.2 9.8l1.6 1.6"/><circle cx="8.4" cy="15.6" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.4"/><circle cx="18" cy="8.4" r="2.4"/><circle class="d" cx="11.4" cy="17.4" r="3"/><path d="M8.3 7.4l7.3.8M7.1 9.2l2.9 5.6M16.9 10.6l-3.6 4.6"/></symbol>
+  <symbol id="i-skills" viewBox="0 0 24 24"><path d="M9 3.4v4.2M15 3.4v4.2"/><path class="d" d="M6.2 7.6h11.6v3.2a5.8 5.8 0 0 1-11.6 0Z"/><path d="M12 16.6v4"/></symbol>
+  <symbol id="i-supplier" viewBox="0 0 24 24"><path class="d" d="M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6Z"/><path d="M4 7.6l8 4.4 8-4.4M12 12v8.8M8 5.4l8 4.4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle class="d" cx="9" cy="7" r="2.6"/><circle class="d" cx="15.4" cy="17" r="2.6"/></symbol>
+  <!-- utility glyphs -->
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.4"/><path d="m15.6 15.6 4.6 4.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.4 4.4 4.4L19 7.4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.4 6.4 17.6 17.6M17.6 6.4 6.4 17.6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4.2 21 19.4H3Z"/><path d="M12 10v4.2M12 16.9h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6V12l3 1.8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.4" width="14" height="10" rx="2.6"/><path d="M8.2 10.4V8a3.8 3.8 0 0 1 7.6 0v2.4"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><ellipse cx="12" cy="7.4" rx="7" ry="3"/><path d="M5 7.4v4.6c0 1.7 3.1 3 7 3s7-1.3 7-3V7.4M5 12v4.6c0 1.7 3.1 3 7 3s7-1.3 7-3V12"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9.4 6 6 6-6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9.4 6 6 6-6"/></symbol>
+  <symbol id="i-retry" viewBox="0 0 24 24"><path d="M19.4 12a7.4 7.4 0 1 1-2.2-5.2"/><path d="M19.6 4.6v4.2h-4.2"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.6 12S6 5.6 12 5.6 21.4 12 21.4 12 18 18.4 12 18.4 2.6 12 2.6 12Z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.4" height="6.4" rx="2"/><rect x="13.6" y="4" width="6.4" height="6.4" rx="2"/><rect x="4" y="13.6" width="6.4" height="6.4" rx="2"/><rect x="13.6" y="13.6" width="6.4" height="6.4" rx="2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.6 15.2A8 8 0 0 1 8.8 4.4a8 8 0 1 0 10.8 10.8Z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5.6 10.4 6.4L8 18.4Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.4h8l4 4V20.6H6Z"/><path d="M14 3.4v4h4M9 12.4h6M9 16h6"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 24 24"><circle cx="7" cy="5.6" r="2.2"/><circle cx="7" cy="18.4" r="2.2"/><circle cx="17" cy="8" r="2.2"/><path d="M7 7.8v8.4M17 10.2c0 4-6 3.6-9.4 6.4"/></symbol>
+  <!-- brand: incumbent V1 mark (three soft tiles), redrawn as vector -->
+  <symbol id="brand" viewBox="0 0 34 34"><rect width="34" height="34" rx="11" fill="#26324a"/><rect x="11.6" y="4.4" width="10.8" height="10.8" rx="3.4" transform="rotate(45 17 9.8)" fill="#fff"/><rect x="6.4" y="15" width="9.6" height="9.6" rx="3" transform="rotate(45 11.2 19.8)" fill="#d7e2ff" opacity=".9"/><rect x="18" y="15" width="9.6" height="9.6" rx="3" transform="rotate(45 22.8 19.8)" fill="#b7c8f4" opacity=".75"/></symbol>
+</svg>
+<!-- /@icons -->
+<a class="skip" href="#contenu">Aller au contenu</a>
+<div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<div class="shell">
+  <aside class="side glass" aria-label="Navigation principale">
+    <div class="brand"><svg aria-hidden="true"><use href="#brand"/></svg><div><b>agency<span>.</span></b><small>Aurion Studio</small></div></div>
+    <nav class="nav" aria-label="Modules">
+      <a href="#" aria-current="page"><svg class="i"><use href="#i-grid"/></svg>Vue d'ensemble</a>
+      <div class="group">Pilotage</div>
+      <a href="#"><svg class="i"><use href="#i-directeur"/></svg>Directeur</a>
+      <a href="#missions"><svg class="i"><use href="#i-missions"/></svg>Missions et tâches</a>
+      <a href="#decider"><svg class="i"><use href="#i-approvals"/></svg>Validations<span class="count num" aria-label="3 en attente">3</span></a>
+      <a href="#fil"><svg class="i"><use href="#i-runs"/></svg>Exécutions et traces</a>
+      <div class="group">Équipe IA</div>
+      <a href="#equipe"><svg class="i"><use href="#i-agents"/></svg>Agents et workers</a>
+      <a href="#cout"><svg class="i"><use href="#i-models"/></svg>Modèles et budgets</a>
+      <a href="#"><svg class="i"><use href="#i-skills"/></svg>Skills et intégrations</a>
+      <a href="#"><svg class="i"><use href="#i-brain"/></svg>Brain OS et mémoire</a>
+      <div class="group">Système</div>
+      <a href="#"><svg class="i"><use href="#i-infra"/></svg>Infrastructure</a>
+      <a href="#manque"><svg class="i"><use href="#i-jarvis"/></svg>Jarvis et permissions</a>
+      <a href="#"><svg class="i"><use href="#i-supplier"/></svg>Supplier OS</a>
+      <a href="#"><svg class="i"><use href="#i-settings"/></svg>Paramètres</a>
+    </nav>
+    <div class="fill"></div>
+    <div class="health"><span class="dot warn"></span><div><b class="num">23 services sur 24</b>recherche interne hors ligne depuis 41 min</div></div>
+  </aside>
+
+  <main id="contenu">
+    <div class="top glass">
+      <span class="mbrand"><svg aria-hidden="true"><use href="#brand"/></svg><b>agency<span>.</span></b></span>
+      <div class="crumb">Aurion Studio / <b>Vue d'ensemble</b></div>
+      <div class="sp"></div>
+      <span class="demo" title="Aucune donnée réelle : l'API exige une session"><svg class="i" style="width:14px;height:14px"><use href="#i-eye"/></svg><span>Démo · données fictives</span><b class="sr">Démo</b></span>
+      <button class="search" type="button" id="search" aria-label="Rechercher (Ctrl K)"><svg class="i"><use href="#i-search"/></svg><span>Rechercher</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-btn" type="button" id="theme" aria-label="Changer de thème"><svg class="i"><use href="#i-moon"/></svg></button>
+    </div>
+
+    <section class="hello" aria-labelledby="titre">
+      <h1 id="titre">Lundi 10 novembre, <em>trois décisions t'attendent.</em></h1>
+      <p>Deux agents travaillent, un attend une permission. Depuis 9 h, deux résultats sont vérifiés et deux échecs ont une cause établie. Rien n'a été envoyé à l'extérieur sans toi.</p>
+    </section>
+
+    <nav class="answers glass" aria-label="Les sept réponses">
+      <a href="#equipe" class="tone-warn"><span class="q"><svg class="i"><use href="#i-agents"/></svg>Agents</span><span class="a num">2 au travail</span><span class="h">1 bloqué · 3 workers</span></a>
+      <a href="#missions"><span class="q"><svg class="i"><use href="#i-missions"/></svg>Missions</span><span class="a num">3 en cours</span><span class="h">10 tâches sur 17 finies</span></a>
+      <a href="#fil" class="tone-ok"><span class="q"><svg class="i"><use href="#i-check"/></svg>Résultats</span><span class="a num">2 vérifiés</span><span class="h">CA encaissé indisponible</span></a>
+      <a href="#fil" class="tone-danger"><span class="q"><svg class="i"><use href="#i-alert"/></svg>Échecs</span><span class="a num">2 causes</span><span class="h">1 te concerne</span></a>
+      <a href="#manque" class="tone-warn"><span class="q"><svg class="i"><use href="#i-lock"/></svg>Manques</span><span class="a num">3 accès</span><span class="h">bloquent 4 tâches</span></a>
+      <a href="#decider" class="tone-warn"><span class="q"><svg class="i"><use href="#i-approvals"/></svg>Décisions</span><span class="a num">3 en attente</span><span class="h">la plus ancienne : 2 h</span></a>
+      <a href="#cout"><span class="q"><svg class="i"><use href="#i-coin"/></svg>Coût</span><span class="a num">41,20 $</span><span class="h">ce mois · plafond 100 $</span></a>
+    </nav>
+
+    <div class="cols">
+      <div class="stack">
+        <section class="panel glass" id="decider" aria-labelledby="h-decider">
+          <header><h2 id="h-decider">À décider</h2><span class="src">via <code>/api/v2/approvals</code></span></header>
+
+          <article class="decision" data-open="false">
+            <div class="row">
+              <span class="badge"><svg class="i"><use href="#i-branch"/></svg></span>
+              <div class="grow">
+                <h3>Fusionner la PR #152 « Frais de port par zone »</h3>
+                <div class="meta">agent-01 · mission Boutique hiver · il y a 34 min</div>
+                <div class="chips"><span class="chip ok">CI verte · 31 tests</span><span class="chip">revue IA 8/10</span><span class="chip warn">risque moyen</span></div>
+              </div>
+              <button class="btn" type="button" aria-expanded="false" data-toggle>Examiner</button>
+            </div>
+            <div class="expand"><div><div class="detail">
+              <dl><dt>Fichiers</dt><dd>3 fichiers · +142 −38 · <span class="num">shipping/zones.php</span></dd><dt>Critères</dt><dd>4 sur 4 cochés par la revue IA</dd><dt>Retour arrière</dt><dd>revert de la PR, aucune migration</dd></dl>
+              <div class="actions"><button class="btn primary" type="button" data-demo="Démo : la fusion n'a pas été envoyée.">Accepter la fusion</button><button class="btn quiet" type="button" data-demo="Démo : aucun refus envoyé.">Refuser avec une raison</button></div>
+            </div></div></div>
+          </article>
+
+          <article class="decision" data-open="false">
+            <div class="row">
+              <span class="badge danger"><svg class="i"><use href="#i-lock"/></svg></span>
+              <div class="grow">
+                <h3>Autoriser agent-03 à écrire à 4 fournisseurs</h3>
+                <div class="meta">boîte mail achats · mission Supplier OS · il y a 2 h</div>
+                <div class="chips"><span class="chip danger">risque élevé</span><span class="chip">effet externe</span><span class="chip">limite : 4 mails</span></div>
+              </div>
+              <button class="btn" type="button" aria-expanded="false" data-toggle>Examiner</button>
+            </div>
+            <div class="expand"><div><div class="detail">
+              <dl><dt>Pourquoi</dt><dd>relancer 4 devis sans réponse depuis 6 jours</dd><dt>Portée</dt><dd>rôle marketing · connecteur mail · 24 h</dd><dt>Brouillons</dt><dd>4 mails relus par le Directeur, aucun prix engagé</dd></dl>
+              <div class="actions"><button class="btn primary" type="button" data-demo="Démo : aucune autorisation accordée.">Autoriser pour 24 h</button><button class="btn quiet" type="button" data-demo="Démo : rien n'a été refusé.">Refuser</button></div>
+            </div></div></div>
+          </article>
+
+          <article class="decision" data-open="false">
+            <div class="row">
+              <span class="badge ok"><svg class="i"><use href="#i-infra"/></svg></span>
+              <div class="grow">
+                <h3>Déployer boutique-hiver en préproduction</h3>
+                <div class="meta">agent-02 · après la recette du tunnel · il y a 12 min</div>
+                <div class="chips"><span class="chip ok">risque faible</span><span class="chip">aperçu prêt</span></div>
+              </div>
+              <button class="btn" type="button" aria-expanded="false" data-toggle>Examiner</button>
+            </div>
+            <div class="expand"><div><div class="detail">
+              <dl><dt>Cible</dt><dd>VM de préproduction uniquement</dd><dt>Preuve</dt><dd>recette 18/20, deux cas en attente de #409</dd><dt>Retour arrière</dt><dd>image précédente conservée</dd></dl>
+              <div class="actions"><button class="btn primary" type="button" data-demo="Démo : aucun déploiement lancé.">Déployer en préproduction</button><button class="btn quiet" type="button" data-demo="Démo : rien n'a été reporté.">Attendre #409</button></div>
+            </div></div></div>
+          </article>
+        </section>
+
+        <section class="panel glass" id="missions" aria-labelledby="h-missions">
+          <header><h2 id="h-missions">Missions en cours</h2><span class="src">via <code>/api/v2/objectives</code></span></header>
+          <div class="mission"><div><h3 style="margin:0;font-size:14.5px">Boutique hiver : fiches et livraison</h3><div class="meta">agent-01, agent-02 · Directeur planifie le lot 2</div></div><div class="prog"><span class="num">5 tâches sur 8</span><div class="bar"><i style="width:62%"></i></div></div><span class="chip">en cours</span></div>
+          <div class="mission"><div><h3 style="margin:0;font-size:14.5px">Veille niches : rapport hebdomadaire</h3><div class="meta">livré · 14 sources citées, 11 vérifiées</div></div><div class="prog"><span class="num">3 tâches sur 3</span><div class="bar"><i style="width:100%"></i></div></div><span class="chip warn">ta relecture</span></div>
+          <div class="mission"><div><h3 style="margin:0;font-size:14.5px">Supplier OS : relancer les fournisseurs</h3><div class="meta">agent-03 · attend l'autorisation mail</div></div><div class="prog"><span class="num">2 tâches sur 6</span><div class="bar danger"><i style="width:33%"></i></div></div><span class="chip danger">bloquée</span></div>
+        </section>
+
+        <section class="panel glass" id="fil" aria-labelledby="h-fil">
+          <header><h2 id="h-fil">Depuis ta dernière visite</h2><button class="link" type="button" id="seen">Tout marquer comme vu</button></header>
+          <div class="filters" role="group" aria-label="Filtrer le fil">
+            <button type="button" aria-pressed="true" data-f="all">Tout</button><button type="button" aria-pressed="false" data-f="ok">Résultats</button><button type="button" aria-pressed="false" data-f="ko">Échecs</button><button type="button" aria-pressed="false" data-f="ag">Agents</button>
+          </div>
+          <div class="unavailable"><svg class="i"><use href="#i-coin"/></svg><span><b>Chiffre d'affaires encaissé : indisponible.</b> Aucune intégration bancaire ; l'API renvoie <code>null</code>.</span></div>
+          <ol style="list-style:none;margin:0;padding:0" id="ledger">
+            <li class="item unseen" data-k="ok" tabindex="0"><time class="num">14:52</time><span class="badge ok"><svg class="i"><use href="#i-check"/></svg></span><div class="grow"><h3>PR #151 fusionnée : fiches produits, 12 variantes</h3><div class="meta">agent-01 · Boutique hiver</div><div class="chips"><span class="chip ok">CI verte</span><span class="chip">48 tests passés</span><span class="chip">fusion validée par toi</span></div></div></li>
+            <li class="item unseen" data-k="ko" tabindex="0"><time class="num">14:31</time><span class="badge danger"><svg class="i"><use href="#i-x"/></svg></span><div class="grow"><h3>Échec : importer le catalogue fournisseur (#405)</h3><div class="meta">agent-01 · 3 tentatives sur 3</div><div class="cause"><span><b>Cause vérifiée :</b> l'API du fournisseur répond 401, la clé fournisseur manque dans le coffre.</span><span><b>Prochaine action sûre :</b> ajouter la clé dans le coffre des agents, puis relancer.</span></div><div class="chips"><span class="chip">trace c-7f3a2e</span><span class="chip warn">action de ta part</span></div></div></li>
+            <li class="item" data-k="ok" tabindex="0"><time class="num">13:58</time><span class="badge"><svg class="i"><use href="#i-file"/></svg></span><div class="grow"><h3>Rapport de veille livré, relecture demandée</h3><div class="meta">Directeur · Veille niches</div><div class="chips"><span class="chip">14 sources citées</span><span class="chip ok">11 vérifiées</span><span class="chip warn">3 non vérifiées</span></div></div></li>
+            <li class="item" data-k="ko" tabindex="0"><time class="num">13:20</time><span class="badge warn"><svg class="i"><use href="#i-retry"/></svg></span><div class="grow"><h3>Relance : capture d'aperçu de la boutique (#398)</h3><div class="meta">agent-02 · tentative 2 sur 3</div><div class="cause"><span><b>Cause vérifiée :</b> délai du navigateur dépassé (90 s) sur la page panier.</span></div></div></li>
+            <li class="item" data-k="ag" tabindex="0"><time class="num">12:47</time><span class="badge warn"><svg class="i"><use href="#i-pause"/></svg></span><div class="grow"><h3>agent-03 en pause : boîte mail achats non autorisée</h3><div class="meta">demande de validation envoyée à 12:47</div></div></li>
+            <li class="item" data-k="ag" tabindex="0"><time class="num">11:05</time><span class="badge"><svg class="i"><use href="#i-directeur"/></svg></span><div class="grow"><h3>Le Directeur a créé la mission Supplier OS</h3><div class="meta">6 tâches planifiées · autonomie niveau 2</div></div></li>
+          </ol>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="panel glass" id="equipe" aria-labelledby="h-equipe">
+          <header><h2 id="h-equipe">Équipe en ce moment</h2><span class="src">via <code>/api/v2/agents</code></span></header>
+          <div class="agent"><span class="avatar"><svg class="i"><use href="#i-directeur"/></svg><span class="dot live"></span></span><div><b>Directeur</b><div class="meta">planifie le lot 2 de Boutique hiver</div><div class="meta num">grand modèle · vu il y a 4 s</div></div></div>
+          <div class="agent"><span class="avatar num" style="font-weight:800;font-size:12px">01<span class="dot live"></span></span><div><b>agent-01 · dev</b><div class="meta">#412 Frais de port par zone</div><div class="meta num">tests en cours · depuis 18 min</div></div></div>
+          <div class="agent"><span class="avatar num" style="font-weight:800;font-size:12px">02<span class="dot live"></span></span><div><b>agent-02 · qa</b><div class="meta">#409 Tunnel de commande de bout en bout</div><div class="meta num">depuis 6 min</div></div></div>
+          <div class="agent"><span class="avatar num" style="font-weight:800;font-size:12px">03<span class="dot warn"></span></span><div><b>agent-03 · marketing</b><div class="meta">en pause, attend ta décision</div><div class="meta num">file : 2 tâches prêtes</div></div></div>
+        </section>
+
+        <section class="panel glass" id="manque" aria-labelledby="h-manque">
+          <header><h2 id="h-manque">Ce qui manque</h2><span class="src">via <code>/platform/capabilities</code></span></header>
+          <div class="need"><span class="badge danger"><svg class="i"><use href="#i-jarvis"/></svg></span><div class="grow"><b>Clé API fournisseur absente du coffre</b><div class="meta">bloque #405 et #406</div><button class="link" type="button" data-demo="Démo : ouvre la fiche du coffre dans l'app réelle.">Ajouter dans le coffre des agents</button></div></div>
+          <div class="need"><span class="badge warn"><svg class="i"><use href="#i-lock"/></svg></span><div class="grow"><b>Boîte mail achats non autorisée</b><div class="meta">agent-03 · validation en attente</div><a class="link" href="#decider">Voir la décision</a></div></div>
+          <div class="need"><span class="badge"><svg class="i"><use href="#i-infra"/></svg></span><div class="grow"><b>Jarvis : accès lecture au serveur média expiré</b><div class="meta">accordé 2 h, fini à 13:00</div><button class="link" type="button" data-demo="Démo : aucun accès renouvelé.">Renouveler 2 h</button></div></div>
+        </section>
+
+        <section class="panel glass" id="cout" aria-labelledby="h-cout">
+          <header><h2 id="h-cout">Coût de fonctionnement</h2><span class="src">via <code>/api/v2/spend</code></span></header>
+          <div class="cost-head"><strong class="num">41,20 $</strong><span>sur 100 $ ce mois</span></div>
+          <div class="meter" role="img" aria-label="41 % du plafond mensuel utilisé"><i></i></div>
+          <div class="cost-rows num"><div><span>Dernières 24 h</span><b>3,85 $ · 37 exécutions</b></div><div><span>grand modèle</span><b>22,10 $</b></div><div><span>modèle rapide</span><b>12,40 $</b></div><div><span>Modèles locaux</span><b>0 $</b></div></div>
+          <div class="bars" role="img" aria-label="Dépense quotidienne sur 14 jours, de 0,40 $ à 4,10 $"><i style="height:22%"></i><i style="height:35%"></i><i style="height:18%"></i><i style="height:52%"></i><i style="height:61%"></i><i style="height:10%"></i><i style="height:12%"></i><i style="height:44%"></i><i style="height:72%"></i><i style="height:100%"></i><i style="height:58%"></i><i style="height:30%"></i><i style="height:66%"></i><i style="height:94%"></i></div>
+          <div class="axis num"><span>28 oct.</span><span>aujourd'hui</span></div>
+        </section>
+      </div>
+    </div>
+    <p class="foot-note">Maquette A, démonstration statique. Tous les chiffres sont fictifs et étiquetés ; dans l'application, chaque bloc lit l'API indiquée et affiche « indisponible » si la source ne répond pas.</p>
+  </main>
+</div>
+
+<nav class="tabs glass" aria-label="Navigation mobile">
+  <a href="#" aria-current="page"><svg class="i"><use href="#i-grid"/></svg>Accueil</a>
+  <a href="#"><svg class="i"><use href="#i-directeur"/></svg>Directeur</a>
+  <a href="#decider"><svg class="i"><use href="#i-approvals"/></svg>Décisions<span class="count num">3</span></a>
+  <a href="#missions"><svg class="i"><use href="#i-missions"/></svg>Missions</a>
+  <a href="#"><svg class="i"><use href="#i-grid"/></svg>Modules</a>
+</nav>
+<div class="toast" role="status" aria-live="polite" id="toast"></div>
+
+<script>
+(() => {
+  const toast = document.getElementById('toast'); let t
+  const say = (m) => { toast.textContent = m; toast.classList.add('show'); clearTimeout(t); t = setTimeout(() => toast.classList.remove('show'), 2600) }
+  document.querySelectorAll('[data-demo]').forEach((b) => b.addEventListener('click', () => say(b.dataset.demo)))
+  document.querySelectorAll('.decision').forEach((d) => {
+    const b = d.querySelector('[data-toggle]')
+    const flip = () => { const open = d.dataset.open !== 'true'; d.dataset.open = open; b.setAttribute('aria-expanded', open); b.textContent = open ? 'Fermer' : 'Examiner' }
+    b.addEventListener('click', flip)
+    d.querySelector('.row').addEventListener('click', (e) => { if (e.target === b || window.innerWidth > 620) return; flip() })
+  })
+  // unseen entries settle when looked at (hover, focus) or all at once
+  document.querySelectorAll('.item.unseen').forEach((i) => { const s = () => setTimeout(() => i.classList.remove('unseen'), 900); i.addEventListener('mouseenter', s, { once: true }); i.addEventListener('focus', s, { once: true }) })
+  document.getElementById('seen').addEventListener('click', () => document.querySelectorAll('.item.unseen').forEach((i, n) => setTimeout(() => i.classList.remove('unseen'), n * 120)))
+  document.querySelectorAll('.filters button').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('.filters button').forEach((x) => x.setAttribute('aria-pressed', x === b))
+    document.querySelectorAll('#ledger .item').forEach((i) => { i.hidden = b.dataset.f !== 'all' && i.dataset.k !== b.dataset.f })
+  }))
+  document.getElementById('theme').addEventListener('click', () => {
+    const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+    r.dataset.theme = dark ? 'light' : 'dark'
+  })
+  const search = () => say('Démo : la palette Ctrl K ouvre les 12 modules et la recherche.')
+  document.getElementById('search').addEventListener('click', search)
+  addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); search() } })
+})()
+</script>
+</body>
+</html>
