@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agency OS · Orbite</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='11' fill='%2326324a'/%3E%3Crect x='11.6' y='4.4' width='10.8' height='10.8' rx='3.4' transform='rotate(45 17 9.8)' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Direction C « Orbite » — layout: scène centrale (le Directeur en sphère, les agents en orbite) + pile de décisions à droite ; dessous, une dalle de verre en trois colonnes (résultats, échecs, manques) puis les missions en tracés. Monde clair V1, volontairement mono-thème. */
+:root {
+  --bg: #edf0f7; --pearl: #f7f8fc;
+  --glass: rgba(255,255,255,.56); --glass-strong: rgba(255,255,255,.86); --glass-line: rgba(255,255,255,.9);
+  --line: rgba(36,48,78,.10); --line-2: rgba(36,48,78,.18);
+  --ink: #1b2335; --ink-2: #445069; --muted: #5a667c;
+  --accent: #4a5fb2; --accent-soft: #e3e8fb; --iris-a: #f6c9dc; --iris-b: #b9cdf7; --iris-c: #bfeee4;
+  --navy: #232d43; --on-navy: #fff;
+  --ok: #2a7457; --ok-soft: #ddf0e6; --warn: #925510; --warn-soft: #fbecd6; --danger: #a83a45; --danger-soft: #f8e0e3;
+  --font: 'Hanken Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --ease-out: cubic-bezier(.16,1,.3,1); --spring: cubic-bezier(.34,1.5,.64,1);
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box }
+body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--ink); font: 500 14.5px/1.5 var(--font); -webkit-font-smoothing: antialiased; overflow-x: hidden }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit }
+a { color: inherit; text-decoration: none }
+::selection { background: var(--accent-soft) }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 10px }
+svg.i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round }
+.num { font-variant-numeric: tabular-nums }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+.ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: radial-gradient(60% 50% at 28% 22%, #dfe6fb, transparent 70%), radial-gradient(50% 50% at 85% 10%, #f7e4ea, transparent 70%), radial-gradient(60% 50% at 70% 95%, #dcf1ec, transparent 70%) }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); box-shadow: 0 24px 60px -28px rgba(50,64,104,.28), inset 0 1px 0 rgba(255,255,255,.6); -webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%) }
+@media (prefers-reduced-transparency: reduce) { .glass { background: var(--glass-strong); -webkit-backdrop-filter: none; backdrop-filter: none } }
+
+.wrap { max-width: 1400px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)) }
+.top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -.045em }
+.brand svg { width: 32px; height: 32px } .brand .w span { color: var(--accent) }
+.top .sp { flex: 1 }
+.pill { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--glass-strong); border: 1px solid var(--line) }
+.pill.demo { background: var(--warn-soft); color: var(--warn); border-color: transparent }
+.pill.dark { background: var(--navy); color: var(--on-navy); border-color: transparent }
+.pill kbd { font: 700 11px var(--font); border: 1px solid var(--line-2); border-radius: 6px; padding: 0 5px }
+
+/* stage */
+.stage { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr); gap: 22px; align-items: stretch }
+.orbit-card { position: relative; border-radius: 32px; padding: 18px 20px; min-height: 520px; overflow: hidden }
+.orbit-card h1 { position: relative; z-index: 3; margin: 0; font-size: 15px; font-weight: 700; color: var(--ink-2) }
+.orbit-card h1 b { color: var(--ink) }
+.orbit { position: absolute; inset: 52px 12px 64px }
+.orbit svg.rings { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible }
+.rings ellipse { fill: none; stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 6 }
+.core { position: absolute; left: 50%; top: 50%; width: 150px; height: 150px; transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #fff 0 8%, transparent 30%), radial-gradient(circle at 70% 75%, var(--iris-c), transparent 55%), radial-gradient(circle at 30% 70%, var(--iris-a), transparent 58%), radial-gradient(circle at 60% 35%, var(--iris-b), #dfe5f8 70%);
+  box-shadow: inset -12px -16px 40px rgba(90,110,180,.25), inset 10px 12px 30px rgba(255,255,255,.8), 0 30px 60px -20px rgba(80,100,170,.45); animation: iris 18s ease-in-out infinite alternate }
+@keyframes iris { to { filter: hue-rotate(28deg) saturate(1.1) } }
+.core-label { position: absolute; left: 50%; top: calc(50% + 86px); transform: translateX(-50%); text-align: center; width: 260px; z-index: 2 }
+.core-label b { display: block; font-size: 13px; font-weight: 800 }
+.core-label em { font-family: var(--serif); font-size: 21px; line-height: 1.15; color: var(--accent) }
+.sat { position: absolute; z-index: 2; left: 0; top: 0; width: 210px; transform: translate(-50%, -50%); display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 2px 10px; align-items: center; padding: 10px 12px 10px 10px; border-radius: 18px; background: var(--glass-strong); border: 1px solid var(--glass-line); box-shadow: 0 14px 30px -16px rgba(40,56,100,.45); transition: box-shadow .3s, scale .45s var(--spring); will-change: left, top }
+.sat:hover, .sat:focus-visible { scale: 1.06; box-shadow: 0 20px 40px -16px rgba(40,56,100,.55) }
+.sat .av { grid-row: 1 / span 2; width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 800; font-size: 12px; position: relative }
+.sat .av::after { content: ""; position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--glass-strong) }
+.sat.blocked .av { background: var(--warn-soft); color: var(--warn) } .sat.blocked .av::after { background: var(--warn) }
+.sat.blocked { outline: 1.5px dashed color-mix(in srgb, var(--warn) 55%, transparent); outline-offset: 3px }
+.sat b { font-size: 13px; font-weight: 800; line-height: 1.2 } .sat span { font-size: 12px; color: var(--ink-2); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.legend { position: absolute; z-index: 3; left: 20px; right: 20px; bottom: 16px; display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2) }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--ok) } .legend i.w { background: var(--warn) }
+.legend .sp { flex: 1 }
+.legend button { font-weight: 700; color: var(--accent); display: inline-flex; gap: 6px; align-items: center }
+.legend button svg { width: 15px; height: 15px }
+
+/* decision deck */
+.deck-card { border-radius: 32px; padding: 20px; display: flex; flex-direction: column; gap: 14px }
+.deck-head { display: flex; align-items: baseline; gap: 10px }
+.deck-head h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.03em }
+.deck-head .n { margin-left: auto; font-size: 13px; color: var(--muted); font-weight: 700 }
+.deck { position: relative; flex: 1; display: grid; padding-top: 22px }
+.dc { grid-area: 1 / 1; display: flex; flex-direction: column; padding: 18px; border-radius: 22px; background: var(--pearl); border: 1px solid var(--line); box-shadow: 0 18px 40px -22px rgba(40,56,100,.45); transition: transform .6s var(--spring), opacity .4s var(--ease-out); transform-origin: top center }
+.dc[data-pos="0"] { z-index: 3 } .dc[data-pos="1"] { z-index: 2; transform: translateY(-11px) scale(.95); opacity: .8 } .dc[data-pos="2"] { z-index: 1; transform: translateY(-21px) scale(.9); opacity: .5 }
+.dc .why { margin-top: auto; padding-top: 14px; font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line) }
+.dc .why b { color: var(--ink) }
+.dc[data-pos="1"] *, .dc[data-pos="2"] * { visibility: hidden }
+.dc .kind { display: flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 700; color: var(--muted) }
+.dc h3 { margin: 10px 0 4px; font-size: 18px; font-weight: 800; letter-spacing: -.02em; line-height: 1.25; text-wrap: balance }
+.dc .meta { font-size: 13px; color: var(--ink-2) }
+.dc dl { display: grid; grid-template-columns: 112px 1fr; gap: 6px 12px; margin: 14px 0 0; font-size: 13px } .dc dt { color: var(--muted); font-weight: 700 } .dc dd { margin: 0 }
+.chip { font-size: 12px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: var(--bg); color: var(--ink-2) }
+.chip.ok { background: var(--ok-soft); color: var(--ok) } .chip.warn { background: var(--warn-soft); color: var(--warn) } .chip.danger { background: var(--danger-soft); color: var(--danger) }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px }
+.deck-actions { display: flex; gap: 8px; flex-wrap: wrap }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 40px; padding: 0 16px; border-radius: 13px; font-weight: 800; font-size: 13.5px; border: 1px solid var(--line-2); background: var(--glass-strong); transition: transform .4s var(--spring) }
+.btn:hover { transform: translateY(-1px) } .btn:active { transform: scale(.97) }
+.btn.primary { background: var(--navy); color: var(--on-navy); border-color: transparent }
+.btn svg { width: 16px; height: 16px }
+.deck-actions .grow { flex: 1 }
+
+/* ledger slab */
+.slab { margin-top: 22px; border-radius: 30px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) }
+.col { padding: 20px 22px 14px; border-left: 1px solid var(--line); min-width: 0 }
+.col:first-child { border-left: 0 }
+.col h2 { margin: 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px }
+.col h2 .c { font-size: 12px; padding: 1px 8px; border-radius: 99px }
+.col .src { font-size: 12px; color: var(--muted); margin: 2px 0 8px; font-weight: 600 }
+.ent { padding: 11px 0; border-top: 1px solid var(--line) }
+.ent:first-of-type { border-top: 0 }
+.ent b { display: block; font-size: 14px; font-weight: 700; line-height: 1.3 }
+.ent .meta { font-size: 12.5px; color: var(--ink-2); margin-top: 3px }
+.ent .meta strong { color: var(--ink); font-weight: 700 }
+.none { margin-top: 8px; padding: 10px 12px; border: 1px dashed var(--line-2); border-radius: 12px; font-size: 12.5px; color: var(--ink-2) }
+
+/* missions as routes + cost */
+.bottom { margin-top: 22px; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr); gap: 22px }
+.routes { border-radius: 30px; padding: 20px 22px }
+.routes h2, .cost h2 { margin: 0 0 2px; font-size: 16px; font-weight: 800 }
+.routes .src, .cost .src { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 600 }
+.route { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line) }
+.route:first-of-type { border-top: 0 }
+.route b { font-size: 14px; display: block; line-height: 1.3 } .route small { font-size: 12px; color: var(--ink-2) }
+.track { --g: 34px; position: relative; display: flex; gap: var(--g); align-items: center; height: 22px; min-width: 0 }
+.track::before { content: ""; position: absolute; left: 6px; width: calc(var(--n) * (12px + var(--g))); top: 50%; height: 2px; background: var(--line-2); transform: translateY(-50%) }
+.track .fill { position: absolute; left: 6px; width: calc(var(--f) * (12px + var(--g))); top: 50%; height: 2px; background: var(--accent); transform: translateY(-50%) }
+.track i { position: relative; width: 12px; height: 12px; border-radius: 50%; background: var(--pearl); border: 2px solid var(--line-2) }
+.track i.d { background: var(--accent); border-color: var(--accent) }
+.track i.a { border-color: var(--accent); background: var(--pearl); box-shadow: 0 0 0 0 rgba(74,95,178,.5); animation: ping 2.2s var(--ease-out) infinite }
+.track i.x { background: var(--danger); border-color: var(--danger) } .track i.r { background: var(--warn); border-color: var(--warn) }
+@keyframes ping { 70% { box-shadow: 0 0 0 9px rgba(74,95,178,0) } }
+.cost { border-radius: 30px; padding: 20px 22px }
+.cost .big { display: flex; align-items: baseline; gap: 8px } .cost .big strong { font-size: 40px; font-weight: 800; letter-spacing: -.045em; line-height: 1 } .cost .big span { color: var(--ink-2) }
+.meter { height: 10px; border-radius: 99px; background: var(--line); overflow: hidden; margin: 12px 0 14px } .meter i { display: block; height: 100%; width: 41.2%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), #8aa0ee) }
+.cost dl { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 0; font-size: 13px } .cost dt { color: var(--ink-2) } .cost dd { margin: 0; font-weight: 800; text-align: right }
+.foot { font-size: 12px; color: var(--muted); margin: 18px 4px 0 }
+
+/* modules sheet */
+.sheet { position: fixed; inset: 0; z-index: 40; background: rgba(30,40,70,.18); display: grid; place-items: start end; padding: 70px max(24px, env(safe-area-inset-right, 0px)) 16px 16px }
+.sheet[hidden] { display: none }
+.sheet .menu { width: min(420px, 100%); border-radius: 26px; padding: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; animation: pop .5s var(--spring) both; transform-origin: top right }
+@keyframes pop { from { transform: scale(.92); opacity: 0 } }
+.menu a { display: grid; justify-items: center; gap: 6px; padding: 12px 6px; border-radius: 16px; font-size: 12.5px; font-weight: 700; text-align: center; color: var(--ink-2) }
+.menu a:hover, .menu a:focus-visible { background: var(--glass-strong); color: var(--ink) }
+.menu svg.i { width: 24px; height: 24px; color: var(--accent) }
+.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); opacity: 0; padding: 11px 16px; border-radius: 14px; background: var(--navy); color: #fff; font-weight: 700; font-size: 13px; transition: transform .5s var(--spring), opacity .3s; pointer-events: none; z-index: 50; max-width: calc(100vw - 32px) }
+.toast.show { transform: translate(-50%, 0); opacity: 1 }
+
+@media (max-width: 1080px) { .stage, .bottom { grid-template-columns: 1fr } .slab { grid-template-columns: 1fr } .col { border-left: 0; border-top: 1px solid var(--line) } .col:first-child { border-top: 0 } }
+@media (max-width: 640px) {
+  .wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 28px }
+  .pill.demo span, .pill.search span, .pill.search kbd { display: none } .pill.search, .pill.demo { width: 38px; padding: 0; justify-content: center }
+  .orbit-card { min-height: 0; border-radius: 26px; padding: 16px; display: flex; flex-direction: column; gap: 12px }
+  .orbit { position: relative; inset: auto; display: grid; gap: 8px; padding-top: 196px }
+  .orbit svg.rings { height: 180px }
+  .core { top: 74px; width: 112px; height: 112px }
+  .core-label { top: 136px; width: 240px } .core-label em { font-size: 18px }
+  .sat { position: relative; width: auto; transform: none; left: auto !important; top: auto !important }
+  .legend { position: static } .legend #pause { display: none }
+  .dc dl { grid-template-columns: 1fr } .dc dt { margin-top: 4px }
+  .route { grid-template-columns: minmax(0,1fr) auto } .route .track { grid-column: 1 / -1; grid-row: 2; --g: 18px }
+  .slab, .routes, .cost, .deck-card { border-radius: 24px }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important } }
+</style>
+</head>
+<body>
+<!-- @icons -->
+<svg class="icon-defs" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute">
+  <!-- Agency OS module marks: original 24x24 geometry, 1.6 stroke, round joins. ".d" = secondary layer (duotone in direction B). -->
+  <symbol id="i-directeur" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path class="d" d="M12 6.4 14.3 12 12 17.6 9.7 12Z"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-missions" viewBox="0 0 24 24"><path d="M6 21V3.8"/><path class="d" d="M6 4.6h11.2l-2.3 3.7 2.3 3.7H6"/><path d="M3.6 21h5"/></symbol>
+  <symbol id="i-agents" viewBox="0 0 24 24"><circle cx="7.6" cy="8" r="3"/><circle class="d" cx="16.4" cy="16" r="3"/><path d="M9.9 10.2l4.2 3.6"/><circle cx="17.4" cy="6.6" r="1.4"/><path d="M9.8 18.8c-1.6 1-4.4.9-5.8-.6"/></symbol>
+  <symbol id="i-models" viewBox="0 0 24 24"><path class="d" d="M12 3.4 20.6 19H3.4Z"/><path d="M12 3.4V19M12 19l-5-6.6M12 19l5-6.6"/></symbol>
+  <symbol id="i-runs" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="3.6"/><path class="d" d="M6.4 12.4h2.8l1.6-3.6 2.6 7 1.8-3.4h2.4"/></symbol>
+  <symbol id="i-approvals" viewBox="0 0 24 24"><path class="d" d="M12 3.2 19 6v5.3c0 4.4-2.9 7.7-7 9.5-4.1-1.8-7-5.1-7-9.5V6Z"/><path d="m8.8 12.1 2.3 2.3 4.2-4.6"/></symbol>
+  <symbol id="i-infra" viewBox="0 0 24 24"><rect x="3.6" y="4" width="16.8" height="6.4" rx="2.2"/><rect class="d" x="3.6" y="13.6" width="16.8" height="6.4" rx="2.2"/><path d="M7.2 7.2h.01M7.2 16.8h.01M11 7.2h5.6M11 16.8h5.6"/></symbol>
+  <symbol id="i-jarvis" viewBox="0 0 24 24"><circle class="d" cx="8.4" cy="15.6" r="4.2"/><path d="m11.4 12.6 8.2-8.2M16.4 7.6l2.2 2.2M14.2 9.8l1.6 1.6"/><circle cx="8.4" cy="15.6" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.4"/><circle cx="18" cy="8.4" r="2.4"/><circle class="d" cx="11.4" cy="17.4" r="3"/><path d="M8.3 7.4l7.3.8M7.1 9.2l2.9 5.6M16.9 10.6l-3.6 4.6"/></symbol>
+  <symbol id="i-skills" viewBox="0 0 24 24"><path d="M9 3.4v4.2M15 3.4v4.2"/><path class="d" d="M6.2 7.6h11.6v3.2a5.8 5.8 0 0 1-11.6 0Z"/><path d="M12 16.6v4"/></symbol>
+  <symbol id="i-supplier" viewBox="0 0 24 24"><path class="d" d="M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6Z"/><path d="M4 7.6l8 4.4 8-4.4M12 12v8.8M8 5.4l8 4.4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle class="d" cx="9" cy="7" r="2.6"/><circle class="d" cx="15.4" cy="17" r="2.6"/></symbol>
+  <!-- utility glyphs -->
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.4"/><path d="m15.6 15.6 4.6 4.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.4 4.4 4.4L19 7.4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.4 6.4 17.6 17.6M17.6 6.4 6.4 17.6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4.2 21 19.4H3Z"/><path d="M12 10v4.2M12 16.9h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6V12l3 1.8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.4" width="14" height="10" rx="2.6"/><path d="M8.2 10.4V8a3.8 3.8 0 0 1 7.6 0v2.4"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><ellipse cx="12" cy="7.4" rx="7" ry="3"/><path d="M5 7.4v4.6c0 1.7 3.1 3 7 3s7-1.3 7-3V7.4M5 12v4.6c0 1.7 3.1 3 7 3s7-1.3 7-3V12"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9.4 6 6 6-6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9.4 6 6 6-6"/></symbol>
+  <symbol id="i-retry" viewBox="0 0 24 24"><path d="M19.4 12a7.4 7.4 0 1 1-2.2-5.2"/><path d="M19.6 4.6v4.2h-4.2"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.6 12S6 5.6 12 5.6 21.4 12 21.4 12 18 18.4 12 18.4 2.6 12 2.6 12Z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.4" height="6.4" rx="2"/><rect x="13.6" y="4" width="6.4" height="6.4" rx="2"/><rect x="4" y="13.6" width="6.4" height="6.4" rx="2"/><rect x="13.6" y="13.6" width="6.4" height="6.4" rx="2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.6 15.2A8 8 0 0 1 8.8 4.4a8 8 0 1 0 10.8 10.8Z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5.6 10.4 6.4L8 18.4Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.4h8l4 4V20.6H6Z"/><path d="M14 3.4v4h4M9 12.4h6M9 16h6"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 24 24"><circle cx="7" cy="5.6" r="2.2"/><circle cx="7" cy="18.4" r="2.2"/><circle cx="17" cy="8" r="2.2"/><path d="M7 7.8v8.4M17 10.2c0 4-6 3.6-9.4 6.4"/></symbol>
+  <!-- brand: incumbent V1 mark (three soft tiles), redrawn as vector -->
+  <symbol id="brand" viewBox="0 0 34 34"><rect width="34" height="34" rx="11" fill="#26324a"/><rect x="11.6" y="4.4" width="10.8" height="10.8" rx="3.4" transform="rotate(45 17 9.8)" fill="#fff"/><rect x="6.4" y="15" width="9.6" height="9.6" rx="3" transform="rotate(45 11.2 19.8)" fill="#d7e2ff" opacity=".9"/><rect x="18" y="15" width="9.6" height="9.6" rx="3" transform="rotate(45 22.8 19.8)" fill="#b7c8f4" opacity=".75"/></symbol>
+</svg>
+<!-- /@icons -->
+<div class="ambient" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><svg aria-hidden="true"><use href="#brand"/></svg><span class="w">agency<span>.</span></span></div>
+    <div class="sp"></div>
+    <span class="pill demo"><svg class="i" style="width:15px;height:15px"><use href="#i-eye"/></svg><span>Démo · données fictives</span><b class="sr">Démo</b></span>
+    <button class="pill search" type="button" id="search" aria-label="Rechercher (Ctrl K)"><svg class="i" style="width:16px;height:16px"><use href="#i-search"/></svg><span>Rechercher</span><kbd>Ctrl K</kbd></button>
+    <button class="pill dark" type="button" id="mods" aria-haspopup="dialog" aria-expanded="false"><svg class="i" style="width:16px;height:16px"><use href="#i-grid"/></svg>Modules</button>
+  </header>
+
+  <main id="contenu">
+    <div class="stage">
+      <section class="orbit-card glass" aria-labelledby="h-orbit">
+        <h1 id="h-orbit"><b>Lundi 10 novembre.</b> 2 agents au travail, 1 attend une permission.</h1>
+        <div class="orbit" id="orbit">
+          <svg class="rings" aria-hidden="true"><ellipse id="ring" cx="50%" cy="50%" rx="45%" ry="38%"/></svg>
+          <div class="core" aria-hidden="true"></div>
+          <div class="core-label"><b>Directeur · grand modèle</b><em>planifie le lot 2 de Boutique hiver</em></div>
+          <button class="sat" type="button" data-angle="215" style="left:16%;top:22%" data-demo="agent-01 · dev : #412 Frais de port par zone, étape tests, 18 min, 0,42 $."><span class="av num">01</span><b>agent-01 · dev</b><span>#412 Frais de port par zone</span></button>
+          <button class="sat" type="button" data-angle="-25" style="left:88%;top:34%" data-demo="agent-02 · qa : #409 Tunnel de commande, 6 min, 0,08 $."><span class="av num">02</span><b>agent-02 · qa</b><span>#409 Tunnel de commande</span></button>
+          <button class="sat blocked" type="button" data-angle="148" style="left:16%;top:78%" data-demo="agent-03 · marketing : en pause, attend l'autorisation mail achats."><span class="av num">03</span><b>agent-03 · marketing</b><span>attend ta permission</span></button>
+        </div>
+        <div class="legend"><span><i></i>au travail</span><span><i class="w"></i>bloqué</span><span class="num">via <b>/api/v2/agents</b></span><span class="sp"></span><button type="button" id="pause" aria-pressed="false"><svg class="i"><use href="#i-pause"/></svg><span>Figer l'orbite</span></button></div>
+      </section>
+
+      <section class="deck-card glass" aria-labelledby="h-deck">
+        <div class="deck-head"><h2 id="h-deck">À décider</h2><span class="n num" id="deck-n">1 sur 3</span></div>
+        <div class="deck" id="deck" aria-live="polite">
+          <article class="dc" data-pos="0">
+            <div class="kind"><svg class="i"><use href="#i-branch"/></svg>Fusion de code · il y a 34 min</div>
+            <h3>Fusionner la PR #152 « Frais de port par zone »</h3>
+            <div class="meta">agent-01 · mission Boutique hiver</div>
+            <div class="chips"><span class="chip ok">CI verte · 31 tests</span><span class="chip">revue IA 8/10</span><span class="chip warn">risque moyen</span></div>
+            <dl><dt>Fichiers</dt><dd class="num">3 · +142 −38</dd><dt>Critères</dt><dd>4 sur 4 cochés par la revue IA</dd><dt>Retour arrière</dt><dd>revert, aucune migration</dd></dl>
+            <p class="why"><b>Ce que tu valides :</b> la fusion dans main ; le déploiement reste une décision séparée.</p>
+          </article>
+          <article class="dc" data-pos="1">
+            <div class="kind"><svg class="i"><use href="#i-lock"/></svg>Autorisation · il y a 2 h</div>
+            <h3>Autoriser agent-03 à écrire à 4 fournisseurs</h3>
+            <div class="meta">boîte mail achats · mission Supplier OS</div>
+            <div class="chips"><span class="chip danger">risque élevé</span><span class="chip">effet externe</span><span class="chip">24 h · 4 mails</span></div>
+            <dl><dt>Pourquoi</dt><dd>4 devis sans réponse depuis 6 jours</dd><dt>Portée</dt><dd>rôle marketing · connecteur mail</dd><dt>Brouillons</dt><dd>relus par le Directeur, aucun prix engagé</dd></dl>
+            <p class="why"><b>Ce que tu valides :</b> 4 mails sortants, pendant 24 h, puis l'accès se referme.</p>
+          </article>
+          <article class="dc" data-pos="2">
+            <div class="kind"><svg class="i"><use href="#i-infra"/></svg>Déploiement · il y a 12 min</div>
+            <h3>Déployer boutique-hiver en préproduction</h3>
+            <div class="meta">agent-02 · après la recette</div>
+            <div class="chips"><span class="chip ok">risque faible</span><span class="chip">recette 18/20</span></div>
+            <dl><dt>Cible</dt><dd>VM de préproduction</dd><dt>Preuve</dt><dd>recette 18/20, 2 cas attendent #409</dd><dt>Retour arrière</dt><dd>image précédente conservée</dd></dl>
+            <p class="why"><b>Ce que tu valides :</b> la préproduction seulement ; la production n'est pas touchée.</p>
+          </article>
+        </div>
+        <div class="deck-actions"><button class="btn primary grow" type="button" id="act" data-demo="Démo : aucune décision envoyée.">Accepter</button><button class="btn" type="button" data-demo="Démo : le détail s'ouvre dans Validations.">Examiner</button><button class="btn" type="button" id="next" aria-label="Décision suivante">Suivante<svg class="i"><use href="#i-chevron"/></svg></button></div>
+      </section>
+    </div>
+
+    <section class="slab glass" aria-label="Résultats, échecs et manques">
+      <div class="col">
+        <h2><svg class="i" style="color:var(--ok)"><use href="#i-check"/></svg>Résultats vérifiés <span class="c chip ok num">2</span></h2>
+        <p class="src">via /objectives/{id}/evidence</p>
+        <div class="ent"><b>PR #151 fusionnée : fiches produits, 12 variantes</b><div class="meta">14:52 · <strong>CI verte, 48 tests passés</strong></div></div>
+        <div class="ent"><b>Rapport de veille livré</b><div class="meta">13:58 · <strong>11 sources vérifiées sur 14</strong> · relecture demandée</div></div>
+        <div class="none"><b>Chiffre d'affaires encaissé : indisponible.</b> Aucune intégration bancaire.</div>
+      </div>
+      <div class="col">
+        <h2><svg class="i" style="color:var(--danger)"><use href="#i-alert"/></svg>Échecs et causes <span class="c chip danger num">2</span></h2>
+        <p class="src">via /api/v2/tasks?state=failed · traces</p>
+        <div class="ent"><b>Importer le catalogue fournisseur (#405)</b><div class="meta">3 tentatives sur 3 · <strong>cause vérifiée : 401, clé fournisseur absente du coffre</strong></div><div class="meta">Prochaine action : ajouter la clé, puis relancer</div></div>
+        <div class="ent"><b>Capture d'aperçu de la boutique (#398)</b><div class="meta">tentative 2 sur 3 · <strong>délai du navigateur dépassé (90 s)</strong> · relancée seule</div></div>
+      </div>
+      <div class="col">
+        <h2><svg class="i" style="color:var(--warn)"><use href="#i-jarvis"/></svg>Ce qui manque <span class="c chip warn num">3</span></h2>
+        <p class="src">via /platform/capabilities · /api/v2/acces</p>
+        <div class="ent"><b>Clé API fournisseur dans le coffre</b><div class="meta">bloque #405 et #406 · <strong>à toi d'agir</strong></div></div>
+        <div class="ent"><b>Boîte mail achats pour agent-03</b><div class="meta">décision en attente dans la pile</div></div>
+        <div class="ent"><b>Jarvis : lecture sur le serveur média</b><div class="meta">expiré à 13:00 · renouvelable 2 h</div></div>
+      </div>
+    </section>
+
+    <div class="bottom">
+      <section class="routes glass" aria-labelledby="h-routes">
+        <h2 id="h-routes">Missions en cours</h2><p class="src">via /api/v2/objectives · un point par tâche</p>
+        <div class="route"><div><b>Boutique hiver</b><small class="num">5 sur 8 · 1 en cours</small></div><div class="track" style="--n:7;--f:5" role="img" aria-label="5 tâches finies, 1 en cours, 2 à venir"><span class="fill"></span><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="a"></i><i></i><i></i></div><span class="chip">en cours</span></div>
+        <div class="route"><div><b>Veille niches</b><small class="num">3 sur 3 · ta relecture</small></div><div class="track" style="--n:2;--f:2" role="img" aria-label="3 tâches finies"><span class="fill"></span><i class="d"></i><i class="d"></i><i class="d"></i></div><span class="chip warn">relecture</span></div>
+        <div class="route"><div><b>Supplier OS</b><small class="num">2 sur 6 · 1 échec</small></div><div class="track" style="--n:5;--f:1" role="img" aria-label="2 finies, 1 en échec, 1 relancée, 2 à venir"><span class="fill"></span><i class="d"></i><i class="d"></i><i class="x"></i><i class="r"></i><i></i><i></i></div><span class="chip danger">bloquée</span></div>
+      </section>
+      <section class="cost glass" aria-labelledby="h-cost">
+        <h2 id="h-cost">Coût de fonctionnement</h2><p class="src">via /api/v2/spend</p>
+        <div class="big num"><strong>41,20 $</strong><span>sur 100 $ ce mois</span></div>
+        <div class="meter" role="img" aria-label="41 % du plafond mensuel"><i></i></div>
+        <dl class="num"><dt>24 dernières heures</dt><dd>3,85 $ · 37 exécutions</dd><dt>grand modèle</dt><dd>22,10 $</dd><dt>modèle rapide</dt><dd>12,40 $</dd><dt>Infrastructure</dt><dd>23 services sur 24</dd></dl>
+      </section>
+    </div>
+    <p class="foot">Maquette C, démonstration statique. Chiffres fictifs ; chaque bloc lit l'API indiquée et affiche « indisponible » si elle ne répond pas.</p>
+  </main>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <nav class="menu glass" role="dialog" aria-modal="true" aria-label="Tous les modules">
+    <a href="#"><svg class="i"><use href="#i-directeur"/></svg>Directeur</a><a href="#"><svg class="i"><use href="#i-missions"/></svg>Missions et tâches</a><a href="#"><svg class="i"><use href="#i-agents"/></svg>Agents et workers</a>
+    <a href="#"><svg class="i"><use href="#i-models"/></svg>Modèles et budgets</a><a href="#"><svg class="i"><use href="#i-runs"/></svg>Exécutions et traces</a><a href="#"><svg class="i"><use href="#i-approvals"/></svg>Validations</a>
+    <a href="#"><svg class="i"><use href="#i-infra"/></svg>Infrastructure</a><a href="#"><svg class="i"><use href="#i-jarvis"/></svg>Jarvis et permissions</a><a href="#"><svg class="i"><use href="#i-brain"/></svg>Brain OS et mémoire</a>
+    <a href="#"><svg class="i"><use href="#i-skills"/></svg>Skills et intégrations</a><a href="#"><svg class="i"><use href="#i-supplier"/></svg>Supplier OS</a><a href="#"><svg class="i"><use href="#i-settings"/></svg>Paramètres</a>
+  </nav>
+</div>
+<div class="toast" role="status" aria-live="polite" id="toast"></div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)]
+  const toast = $('#toast'); let t
+  const say = (m) => { toast.textContent = m; toast.classList.add('show'); clearTimeout(t); t = setTimeout(() => toast.classList.remove('show'), 2800) }
+  $$('[data-demo]').forEach((b) => b.addEventListener('click', () => say(b.dataset.demo)))
+
+  // orbit: agents travel an ellipse with a damped angular velocity; hover/focus slows them to a halt (spring back on leave)
+  const orbit = $('#orbit'), sats = $$('.sat', orbit), ring = $('#ring')
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, narrow = matchMedia('(max-width: 640px)')
+  let speed = reduce ? 0 : 1, target = speed, last = performance.now(), frozen = false
+  const angles = sats.map((s) => (+s.dataset.angle * Math.PI) / 180)
+  const place = () => {
+    if (narrow.matches) { sats.forEach((s) => { s.style.left = s.style.top = s.style.zIndex = '' }); return }
+    const w = orbit.clientWidth, h = orbit.clientHeight, cw = sats[0].offsetWidth, ch = sats[0].offsetHeight, rx = (w - cw) / 2 - 10, ry = (h - ch) / 2 - 4
+    sats.forEach((s, i) => {
+      const blocked = s.classList.contains('blocked'), a = angles[i], k = 1
+      s.style.left = (w / 2 + Math.cos(a) * rx * k) + 'px'
+      s.style.top = (h / 2 + Math.sin(a) * ry * k) + 'px'
+      s.style.zIndex = Math.sin(a) > 0 ? 4 : 2
+    })
+  }
+  const tick = (now) => {
+    const dt = Math.min(64, now - last) / 1000; last = now
+    speed += (target - speed) * Math.min(1, dt * 3)  // critically damped easing toward target speed
+    angles.forEach((_, i) => { if (!sats[i].classList.contains('blocked')) angles[i] += speed * dt * (2 * Math.PI / 140) })
+    place(); requestAnimationFrame(tick)
+  }
+  place(); addEventListener('resize', place)
+  if (!reduce) requestAnimationFrame(tick)
+  sats.forEach((s) => { const slow = () => (target = 0), go = () => (target = frozen ? 0 : 1); s.addEventListener('mouseenter', slow); s.addEventListener('focus', slow); s.addEventListener('mouseleave', go); s.addEventListener('blur', go) })
+  const pause = $('#pause')
+  if (reduce) pause.hidden = true
+  pause.addEventListener('click', () => { frozen = !frozen; target = frozen ? 0 : 1; pause.setAttribute('aria-pressed', frozen); pause.querySelector('span').textContent = frozen ? 'Relancer l\'orbite' : 'Figer l\'orbite'; pause.querySelector('use').setAttribute('href', frozen ? '#i-play' : '#i-pause') })
+
+  // decision deck: the top card moves to the back with a spring
+  const cards = $$('.dc'), labels = ['Accepter la fusion', 'Lire les brouillons', 'Déployer en préproduction']; let top = 0
+  const order = () => { cards.forEach((c, i) => { const pos = (i - top + cards.length) % cards.length; c.dataset.pos = pos; c.setAttribute('aria-hidden', pos !== 0) }); $('#deck-n').textContent = (top + 1) + ' sur ' + cards.length; $('#act').textContent = labels[top] }
+  $('#next').addEventListener('click', () => { top = (top + 1) % cards.length; order() })
+  order()
+
+  const sheet = $('#sheet'), mods = $('#mods')
+  const show = (v) => { sheet.hidden = !v; mods.setAttribute('aria-expanded', v); (v ? $('.menu a', sheet) : mods).focus() }
+  mods.addEventListener('click', () => show(sheet.hidden))
+  sheet.addEventListener('click', (e) => { if (e.target === sheet) show(false) })
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !sheet.hidden) show(false)
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); say('Démo : la palette Ctrl K cherche missions, tâches et modules.') }
+  })
+  $('#search').addEventListener('click', () => say('Démo : la palette Ctrl K cherche missions, tâches et modules.'))
+})()
+</script>
+</body>
+</html>
